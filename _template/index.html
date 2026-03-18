@@ -182,8 +182,32 @@
   .toast.show { opacity: 1; transform: translateY(0); }
   .toast.err  { background: #8B2020; }
 
+  /* MARK AS DONE — team mode */
+  .done-btn {
+    display: none; cursor: pointer;
+    background: none; border: 1px solid var(--done-border);
+    color: var(--done-text); font-size: 10px; font-weight: 600;
+    font-family: 'DM Sans', sans-serif; padding: 2px 7px;
+    border-radius: 3px; margin-left: 6px;
+    vertical-align: middle; white-space: nowrap;
+    opacity: 0; transition: opacity .15s;
+  }
+  body.team-mode tr[data-id]:not(.row-done) .done-btn { display: inline-block; }
+  body.team-mode tr[data-id]:not(.row-done):hover .done-btn { opacity: 1; }
+
+  /* DRAG SORT — team mode */
+  .drag-handle {
+    display: none; cursor: grab; color: #CCC;
+    font-size: 14px; padding: 0 6px 0 0;
+    user-select: none; line-height: 1;
+  }
+  .drag-handle:hover { color: #999; }
+  body.team-mode tr[data-id] .drag-handle { display: inline; }
+  tr.dragging { opacity: .4; }
+  tr.drag-over td { border-top: 2px solid var(--edit-ring) !important; }
+
   @media print {
-    .team-banner, .add-btn, .add-form, .editable { display: none !important; }
+    .team-banner, .add-btn, .add-form, .editable, .drag-handle { display: none !important; }
     .page { padding: 20px; }
   }
   @media (max-width: 600px) {
@@ -341,7 +365,7 @@
 // CONFIG — update these for each client
 // ═══════════════════════════════════════════════════════════
 const TEAM_KEY  = 'ob-team-2026';           // shared team password
-const MON_TOKEN = 'eyJhbGciOiJIUzI1NiJ9.eyJ0aWQiOjYyNDM1NzMyNSwiYWFpIjoxMSwidWlkIjo2MDQyODY3MCwiaWFkIjoiMjAyNi0wMi0yM1QwMTo0MjowMi4wMDBaIiwicGVyIjoibWU6d3JpdGUiLCJhY3RpZCI6MjMyNTUzNTYsInJnbiI6InVzZTEifQ.hkh7r8Sn3i6xTak1iw2eYJqS3kf4xtXH3sOUDryHaXc';    // paste Monday API key at deploy
+const MON_TOKEN = 'YOUR_MONDAY_API_KEY';    // paste Monday API key at deploy
 const BOARD_ID  = 18397531209;              // Monday Active Projects board ID
 const MON_COL   = 'timerange_mm00qh4t';    // timeline column ID
 
@@ -356,18 +380,112 @@ if (isTeam) {
   document.getElementById('footer-note').textContent =
     'Team mode — date edits sync to Monday.com';
   activateDates();
+  activateDragSort();
 }
 
 // ═══════════════════════════════════════════════════════════
-// MAKE DATES EDITABLE
+// DRAG TO REORDER (team mode)
+// ═══════════════════════════════════════════════════════════
+function activateDragSort() {
+  const tbody = document.getElementById('ms-body');
+  let dragged = null;
+
+  tbody.querySelectorAll('tr[data-id]').forEach(row => {
+    if (row.id === 'add-form') return;
+    if (row.querySelector('.drag-handle')) return; // already init'd
+    const firstTd = row.querySelector('td');
+    if (!firstTd) return;
+
+    const handle = document.createElement('span');
+    handle.className = 'drag-handle';
+    handle.textContent = '⠿';
+    handle.title = 'Drag to reorder';
+    firstTd.prepend(handle);
+    row.setAttribute('draggable', 'true');
+
+    row.addEventListener('dragstart', e => {
+      dragged = row;
+      setTimeout(() => row.classList.add('dragging'), 0);
+      e.dataTransfer.effectAllowed = 'move';
+    });
+    row.addEventListener('dragend', () => {
+      row.classList.remove('dragging');
+      tbody.querySelectorAll('tr').forEach(r => r.classList.remove('drag-over'));
+      dragged = null;
+    });
+    row.addEventListener('dragover', e => {
+      e.preventDefault();
+      if (row !== dragged) {
+        tbody.querySelectorAll('tr').forEach(r => r.classList.remove('drag-over'));
+        row.classList.add('drag-over');
+      }
+    });
+    row.addEventListener('drop', e => {
+      e.preventDefault();
+      if (dragged && dragged !== row) {
+        const allRows = Array.from(tbody.querySelectorAll('tr[data-id]:not(#add-form)'));
+        const dragIdx = allRows.indexOf(dragged);
+        const dropIdx = allRows.indexOf(row);
+        if (dragIdx < dropIdx) row.after(dragged);
+        else row.before(dragged);
+        row.classList.remove('drag-over');
+        toast('Row moved ✓');
+      }
+    });
+  });
+  tbody.addEventListener('dragover', e => e.preventDefault());
+}
+
+// ═══════════════════════════════════════════════════════════
+// MAKE DATES EDITABLE + MARK AS DONE
 // ═══════════════════════════════════════════════════════════
 function activateDates() {
-  document.querySelectorAll('tr[data-id] .date-display').forEach(el => {
-    el.classList.add('editable');
-    el.title = 'Click to edit';
-    el.addEventListener('click', () => startEdit(el));
+  document.querySelectorAll('tr[data-id]').forEach(row => {
+    if (row.id === 'add-form') return;
+    if (row.classList.contains('row-done')) return;
+
+    // Make date editable
+    const dateEl = row.querySelector('.date-display');
+    if (dateEl) {
+      dateEl.classList.add('editable');
+      dateEl.title = 'Click to edit';
+      dateEl.addEventListener('click', () => startEdit(dateEl));
+    }
+
+    // Add Mark as Done button
+    if (!row.querySelector('.done-btn')) {
+      const nameCell = row.cells[1];
+      if (nameCell) {
+        const btn = document.createElement('button');
+        btn.className = 'done-btn';
+        btn.textContent = '✓ Mark done';
+        btn.addEventListener('click', e => { e.stopPropagation(); markAsDone(row); });
+        nameCell.appendChild(btn);
+      }
+    }
   });
 }
+
+function markAsDone(row) {
+  row.classList.remove('row-approval');
+  row.classList.add('row-done');
+  row.removeAttribute('draggable');
+
+  const dateEl = row.querySelector('.date-display, .editable');
+  const dateText = dateEl ? dateEl.textContent : '–';
+
+  row.cells[0].innerHTML = `<span class="ms-date">${dateText}</span>`;
+  if (row.cells[3]) row.cells[3].innerHTML = `<span class="done-check">✓ Done</span>`;
+  if (row.cells[4]) { row.cells[4].innerHTML = '–'; row.cells[4].className = 'ms-dash'; }
+
+  row.cells[1]?.querySelector('.done-btn')?.remove();
+  row.cells[1]?.querySelector('.drag-handle')?.remove();
+  row.cells[0]?.querySelector('.drag-handle')?.remove();
+
+  toast('Milestone marked as done ✓');
+}
+
+
 
 function startEdit(el) {
   if (el.closest('tr').querySelector('.edit-wrap')) return;
