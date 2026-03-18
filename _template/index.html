@@ -372,8 +372,7 @@ const MON_COL   = 'timerange_mm00qh4t';    // timeline column ID
 // ═══════════════════════════════════════════════════════════
 // INIT
 // ═══════════════════════════════════════════════════════════
-const params = new URLSearchParams(location.search);
-const isTeam = params.get('key') === TEAM_KEY;
+const isTeam = location.href.indexOf('key=' + TEAM_KEY) !== -1;
 
 if (isTeam) {
   document.body.classList.add('team-mode');
