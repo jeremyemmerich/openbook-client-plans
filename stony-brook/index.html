@@ -424,6 +424,456 @@
     </tbody>
   </table>
 
+  <!-- TEAM UNLOCK BUTTON — subtle, client won't notice -->
+  <div style="text-align:right;margin-top:24px">
+    <button onclick="unlockTeamMode()" style="background:none;border:none;color:#DDD;font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;padding:4px 0;">Team</button>
+  </div>
+
+  <footer class="doc-footer">
+    <div class="footer-brand">Open Book</div>
+    <div class="footer-note">
+      teamopenbook.com · Minneapolis, MN<br>
+      <span id="footer-mode-note">For questions, contact your Open Book project lead.</span>
+    </div>
+  </footer>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ─── CONFIG ─────────────────────────────────────
+const TEAM_KEY   = 'ob-team-2026';
+const MON_TOKEN  = '<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Stony Brook School — Open Book Project Plan</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #1C2E44;
+    --cream: #FAFAF8;
+    --border: #D8D4CE;
+    --text: #1A1A18;
+    --muted: #7A7670;
+    --done-bg: #F2F4F0;
+    --done-text: #4A6040;
+    --done-border: #C8D4C0;
+    --approval-bg: #FDF7EE;
+    --approval-border: #E8D090;
+    --approval-text: #6A500A;
+    --edit-ring: #3A7BD5;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { background: var(--cream); }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--cream);
+    color: var(--text);
+    font-size: 13.5px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* TEAM MODE BANNER */
+  .team-banner {
+    display: none;
+    background: var(--navy);
+    color: rgba(255,255,255,0.8);
+    font-size: 12px;
+    font-weight: 500;
+    padding: 8px 60px;
+    letter-spacing: .03em;
+  }
+  .team-banner span { color: #7FB3FF; }
+  body.team-mode .team-banner { display: block; }
+
+  /* PAGE */
+  .page {
+    max-width: 780px;
+    margin: 0 auto;
+    padding: 56px 40px 80px;
+  }
+
+  /* HEADER */
+  .doc-header {
+    margin-bottom: 40px;
+    padding-bottom: 28px;
+    border-bottom: 2px solid var(--navy);
+  }
+  .doc-eyebrow {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 8px;
+  }
+  .doc-title {
+    font-family: 'Libre Baskerville', serif;
+    font-size: 30px;
+    font-weight: 700;
+    color: var(--navy);
+    line-height: 1.2;
+    margin-bottom: 6px;
+  }
+  .doc-subtitle {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    color: var(--muted);
+    font-weight: 300;
+  }
+
+  /* SECTION HEADING */
+  .section-heading {
+    font-family: 'Libre Baskerville', serif;
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--navy);
+    margin: 36px 0 14px;
+  }
+
+  /* TABLES - shared */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 8px;
+    font-size: 13px;
+  }
+  thead tr { background: var(--navy); }
+  thead th {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.75);
+    padding: 9px 13px;
+    text-align: left;
+    white-space: nowrap;
+  }
+  tbody tr { border-bottom: 1px solid var(--border); }
+  tbody tr:last-child { border-bottom: none; }
+  tbody td {
+    padding: 10px 13px;
+    vertical-align: top;
+    line-height: 1.45;
+  }
+
+  /* OVERVIEW TABLE */
+  .tbl-overview tbody tr:nth-child(odd) { background: rgba(0,0,0,0.018); }
+  .tbl-overview .col-ws { font-weight: 600; }
+  .tbl-overview .col-window { color: var(--muted); }
+
+  /* STATUS PILL */
+  .pill {
+    display: inline-block;
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: .04em;
+    padding: 2px 8px;
+    border-radius: 3px;
+    white-space: nowrap;
+  }
+  .pill-complete { background: var(--done-bg); color: var(--done-text); border: 1px solid var(--done-border); }
+  .pill-active { background: #EEF3FF; color: #2A4EA0; border: 1px solid #C0CFFF; }
+  .pill-upcoming { background: #F5F4F0; color: #666; border: 1px solid #DDD; }
+
+  /* MILESTONE TABLE */
+  .tbl-milestones .row-done td { background: var(--done-bg); color: #666; }
+  .tbl-milestones .row-done .ms-name { color: #555; }
+  .tbl-milestones .row-done .done-check { color: var(--done-text); font-weight: 600; font-size: 11px; }
+
+  .tbl-milestones .row-approval td { background: var(--approval-bg); }
+  .tbl-milestones .row-approval .ms-date { color: var(--approval-text); font-weight: 700; }
+  .tbl-milestones .row-approval .ms-approval { color: var(--approval-text); font-weight: 700; }
+
+  .ms-name { font-weight: 500; }
+  .ms-date { font-variant-numeric: tabular-nums; white-space: nowrap; font-size: 12.5px; }
+  .ms-ws { color: var(--muted); font-size: 12px; }
+  .ms-approval { font-size: 12px; white-space: nowrap; }
+  .ms-dash { color: #CCC; }
+
+  /* MARK AS DONE BUTTON — team mode only */
+  .done-btn {
+    display: none;
+    cursor: pointer;
+    background: none;
+    border: 1px solid var(--done-border);
+    color: var(--done-text);
+    font-size: 10px;
+    font-weight: 600;
+    font-family: 'DM Sans', sans-serif;
+    padding: 2px 7px;
+    border-radius: 3px;
+    margin-left: 6px;
+    vertical-align: middle;
+    white-space: nowrap;
+    opacity: 0;
+    transition: opacity .15s;
+  }
+  body.team-mode tr[data-id]:not(.row-done):hover .done-btn { opacity: 1; display: inline-block; }
+  body.team-mode tr[data-id]:not(.row-done) .done-btn { display: inline-block; }
+
+  /* EDITABLE DATE — team mode only */
+  .editable {
+    cursor: pointer;
+    border-bottom: 1.5px dashed var(--edit-ring);
+    padding-bottom: 0;
+    color: #2A5BBF;
+    border-radius: 2px;
+    display: inline-block;
+  }
+  .editable:hover { background: #EEF3FF; }
+  .edit-wrap { display: inline-flex; align-items: center; gap: 5px; }
+  .edit-wrap input {
+    border: 1.5px solid var(--edit-ring);
+    border-radius: 3px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12.5px;
+    padding: 2px 6px;
+    color: var(--text);
+    width: 120px;
+    outline: none;
+    background: #fff;
+  }
+  .edit-wrap input:focus { box-shadow: 0 0 0 2px rgba(58,123,213,.25); }
+  .btn-save {
+    background: var(--navy);
+    color: #fff;
+    border: none;
+    border-radius: 3px;
+    padding: 3px 9px;
+    font-size: 11px;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .btn-cancel {
+    background: none;
+    color: var(--muted);
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    padding: 3px 7px;
+    font-size: 11px;
+    font-family: 'DM Sans', sans-serif;
+    cursor: pointer;
+  }
+  .saving-msg { font-size: 11px; color: var(--muted); font-style: italic; }
+
+  /* ADD ROW BUTTON — team mode */
+  .add-row-btn {
+    display: none;
+    margin-top: 6px;
+    background: none;
+    border: 1px dashed var(--border);
+    color: var(--muted);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px;
+    padding: 6px 14px;
+    border-radius: 4px;
+    cursor: pointer;
+    width: 100%;
+    text-align: left;
+  }
+  .add-row-btn:hover { background: #F0EEE8; color: var(--text); }
+  body.team-mode .add-row-btn { display: block; }
+
+  /* ADD ROW FORM */
+  .add-row-form { display: none; }
+  .add-row-form.open { display: table-row; }
+  .add-row-form td { background: #EEF3FF; padding: 8px 13px; }
+  .add-row-form input, .add-row-form select {
+    border: 1px solid #B0CEFF;
+    border-radius: 3px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px;
+    padding: 4px 7px;
+    outline: none;
+    background: #fff;
+  }
+  .add-row-form input:focus, .add-row-form select:focus { box-shadow: 0 0 0 2px rgba(58,123,213,.2); }
+
+  /* FOOTER */
+  .doc-footer {
+    margin-top: 56px;
+    padding-top: 18px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .footer-brand {
+    font-family: 'Libre Baskerville', serif;
+    font-size: 13px;
+    color: var(--muted);
+  }
+  .footer-note { font-size: 11px; color: var(--muted); text-align: right; }
+
+  /* TOAST */
+  .toast {
+    position: fixed; bottom: 20px; right: 20px;
+    background: var(--navy); color: #fff;
+    font-size: 12.5px; font-weight: 500;
+    padding: 9px 16px; border-radius: 5px;
+    opacity: 0; transform: translateY(6px);
+    transition: all .2s; pointer-events: none; z-index: 999;
+  }
+  .toast.show { opacity: 1; transform: translateY(0); }
+  .toast.err { background: #8B2020; }
+
+  /* DRAG SORT — team mode */
+  .drag-handle {
+    display: none;
+    cursor: grab;
+    color: #CCC;
+    font-size: 14px;
+    padding: 0 6px 0 0;
+    user-select: none;
+    line-height: 1;
+  }
+  .drag-handle:hover { color: #999; }
+  body.team-mode tr[data-id] .drag-handle { display: inline; }
+  tr.dragging { opacity: .4; }
+  tr.drag-over td { border-top: 2px solid var(--edit-ring) !important; }
+
+  @media print {
+    .team-banner, .add-row-btn, .add-row-form, .editable, .drag-handle { display: none !important; }
+    .page { padding: 20px; }
+  }
+  @media (max-width: 600px) {
+    .page { padding: 24px 20px 60px; }
+    .col-window, .ms-ws { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="team-banner">
+  ✏ Team mode — <span>click any date to edit</span> · <span>hover a row to mark done</span> · <span>drag</span> ⠿ to reorder · <span>+ Add milestone</span> below
+</div>
+
+<div class="page">
+
+  <header class="doc-header">
+    <div class="doc-eyebrow">Open Book — Project Plan</div>
+    <div class="doc-title">Stony Brook School</div>
+    <div class="doc-subtitle">Updated March 17, 2026</div>
+  </header>
+
+  <!-- PROJECT OVERVIEW -->
+  <div class="section-heading">Project Overview</div>
+  <table class="tbl-overview">
+    <thead><tr>
+      <th style="width:52%">Workstream</th>
+      <th style="width:20%">Status</th>
+      <th style="width:28%" class="col-window">Target Window</th>
+    </tr></thead>
+    <tbody>
+      <tr><td class="col-ws">Know You Deeply</td><td><span class="pill pill-complete">Complete</span></td><td class="col-window">Dec 2025 – Jan 2026</td></tr>
+      <tr><td class="col-ws">Show Ways Forward</td><td><span class="pill pill-complete">Complete</span></td><td class="col-window">Jan 2026</td></tr>
+      <tr><td class="col-ws">Visual Brand System</td><td><span class="pill pill-active">In Progress</span></td><td class="col-window">Mar – Apr</td></tr>
+      <tr><td class="col-ws">Vision Video</td><td><span class="pill pill-active">In Progress</span></td><td class="col-window">Mar – May</td></tr>
+      <tr><td class="col-ws">Explainer / Overview Video</td><td><span class="pill pill-active">In Progress</span></td><td class="col-window">Mar – May</td></tr>
+      <tr><td class="col-ws">Thematic Spotlight Videos</td><td><span class="pill pill-active">In Progress</span></td><td class="col-window">Mar – May</td></tr>
+      <tr><td class="col-ws">Messaging Guide</td><td><span class="pill pill-upcoming">Upcoming</span></td><td class="col-window">Apr</td></tr>
+      <tr><td class="col-ws">8-Panel Brochure</td><td><span class="pill pill-upcoming">Upcoming</span></td><td class="col-window">Apr – May</td></tr>
+      <tr><td class="col-ws">Refreshed One-Sheet Profiles</td><td><span class="pill pill-upcoming">Upcoming</span></td><td class="col-window">Apr – May</td></tr>
+      <tr><td class="col-ws">Signature Brooker Brochure</td><td><span class="pill pill-upcoming">Upcoming</span></td><td class="col-window">Apr – May</td></tr>
+      <tr><td class="col-ws">Project Close-Out</td><td><span class="pill pill-upcoming">Upcoming</span></td><td class="col-window">May – Jun</td></tr>
+    </tbody>
+  </table>
+
+  <!-- KEY MILESTONES -->
+  <div class="section-heading">Key Milestones + Sign-Off Dates</div>
+
+  <table class="tbl-milestones" id="milestone-table">
+    <thead><tr>
+      <th style="width:110px">Target Date</th>
+      <th>Milestone</th>
+      <th style="width:160px" class="ms-ws">Workstream</th>
+      <th style="width:75px">Status</th>
+      <th style="width:120px">Approval Needed By</th>
+    </tr></thead>
+    <tbody id="milestone-body">
+
+      <!-- COMPLETED -->
+      <tr class="row-done"><td class="ms-date">Dec 2025</td><td class="ms-name">Project Kickoff Meeting</td><td class="ms-ws">Know You Deeply</td><td><span class="done-check">✓ Done</span></td><td class="ms-dash">–</td></tr>
+      <tr class="row-done"><td class="ms-date">Dec 2025</td><td class="ms-name">Onsite Visit + Debrief</td><td class="ms-ws">Know You Deeply</td><td><span class="done-check">✓ Done</span></td><td class="ms-dash">–</td></tr>
+      <tr class="row-done"><td class="ms-date">Dec – Jan</td><td class="ms-name">Material Review + Discovery Conversations</td><td class="ms-ws">Know You Deeply</td><td><span class="done-check">✓ Done</span></td><td class="ms-dash">–</td></tr>
+      <tr class="row-done"><td class="ms-date">Jan 2026</td><td class="ms-name">Know Work Sessions</td><td class="ms-ws">Know You Deeply</td><td><span class="done-check">✓ Done</span></td><td class="ms-dash">–</td></tr>
+      <tr class="row-done"><td class="ms-date">Jan 21</td><td class="ms-name">Show Ways Forward Presentation</td><td class="ms-ws">Show Ways Forward</td><td><span class="done-check">✓ Done</span></td><td class="ms-dash">✓ Approved</td></tr>
+      <tr class="row-done"><td class="ms-date">Feb 6</td><td class="ms-name">Present Script, Mix + Directional Boards — Vision Video V1</td><td class="ms-ws">Vision Video</td><td><span class="done-check">✓ Done</span></td><td class="ms-dash">–</td></tr>
+      <tr class="row-done"><td class="ms-date">Feb 11</td><td class="ms-name">Present Revised Script — Vision Video</td><td class="ms-ws">Vision Video</td><td><span class="done-check">✓ Done</span></td><td class="ms-dash">–</td></tr>
+      <tr class="row-done"><td class="ms-date">Mar 5</td><td class="ms-name">Present Explainer Video Script + Boards V1</td><td class="ms-ws">Explainer Video</td><td><span class="done-check">✓ Done</span></td><td class="ms-dash">–</td></tr>
+      <tr class="row-done"><td class="ms-date">Mar 5</td><td class="ms-name">Present Vision Video Boards V2</td><td class="ms-ws">Vision Video</td><td><span class="done-check">✓ Done</span></td><td class="ms-dash">–</td></tr>
+      <tr class="row-done"><td class="ms-date">Mar 11</td><td class="ms-name">Present Visual Brand Direction V2</td><td class="ms-ws">Visual Brand System</td><td><span class="done-check">✓ Done</span></td><td class="ms-dash">–</td></tr>
+      <tr class="row-done"><td class="ms-date">Mar 12</td><td class="ms-name">Present Revised Explainer Video Script V2</td><td class="ms-ws">Explainer Video</td><td><span class="done-check">✓ Done</span></td><td class="ms-dash">–</td></tr>
+
+      <!-- UPCOMING — client facing only -->
+      <tr class="row-approval" data-id="11278157801"><td class="ms-date"><span class="date-display">Mar 18</span></td><td class="ms-name">Visual Brand Direction — Client Approval</td><td class="ms-ws">Visual Brand System</td><td style="font-size:11px;font-weight:600;color:var(--approval-text)">Approval</td><td class="ms-approval">Mar 18</td></tr>
+      <tr class="row-approval" data-id="11344415418"><td class="ms-date"><span class="date-display">Mar 25</span></td><td class="ms-name">Explainer Video Script Direction — Client Approval</td><td class="ms-ws">Explainer Video</td><td style="font-size:11px;font-weight:600;color:var(--approval-text)">Approval</td><td class="ms-approval">Mar 25</td></tr>
+      <tr class="row-approval" data-id="11278173947"><td class="ms-date"><span class="date-display">Mar 26</span></td><td class="ms-name">Vision Video — V3 Direction Meeting</td><td class="ms-ws">Vision Video</td><td style="font-size:11px;font-weight:600;color:var(--approval-text)">Key Meeting</td><td class="ms-approval">Mar 26</td></tr>
+      <tr data-id="11344411930"><td class="ms-date"><span class="date-display">Apr 1</span></td><td class="ms-name">Present Explainer Video Boards to Client</td><td class="ms-ws">Explainer Video</td><td style="font-size:11px;color:var(--muted)">Upcoming</td><td class="ms-approval">Apr 14</td></tr>
+      <tr data-id="11344830512"><td class="ms-date"><span class="date-display">Apr 2</span></td><td class="ms-name">Present Thematic Spotlight Videos — Script, Mix + Boards</td><td class="ms-ws">Thematic Spotlights</td><td style="font-size:11px;color:var(--muted)">Upcoming</td><td class="ms-approval">Apr 14</td></tr>
+      <tr class="row-approval" data-id="null"><td class="ms-date"><span class="date-display">Apr 2</span></td><td class="ms-name">Brand Listen + Calibration Session</td><td class="ms-ws">Visual Brand System</td><td style="font-size:11px;font-weight:600;color:var(--approval-text)">Key Meeting</td><td class="ms-approval">Apr 2</td></tr>
+      <tr data-id="11344814313"><td class="ms-date"><span class="date-display">Apr 4</span></td><td class="ms-name">Present Revised Thematic Spotlight Script to Client</td><td class="ms-ws">Thematic Spotlights</td><td style="font-size:11px;color:var(--muted)">Upcoming</td><td class="ms-approval">Apr 16</td></tr>
+      <tr data-id="11278184073"><td class="ms-date"><span class="date-display">Apr 9</span></td><td class="ms-name">Messaging Guide Presented to Client</td><td class="ms-ws">Messaging Guide</td><td style="font-size:11px;color:var(--muted)">Upcoming</td><td class="ms-approval">Apr 14</td></tr>
+      <tr data-id="11518218163"><td class="ms-date"><span class="date-display">Apr 14</span></td><td class="ms-name">Messaging Guide Calibration Session</td><td class="ms-ws">Messaging Guide</td><td style="font-size:11px;color:var(--muted)">Upcoming</td><td class="ms-dash">–</td></tr>
+      <tr data-id="11278177481"><td class="ms-date"><span class="date-display">Apr 20</span></td><td class="ms-name">8-Panel Brochure — Present First Draft to Client</td><td class="ms-ws">8-Panel Brochure</td><td style="font-size:11px;color:var(--muted)">Upcoming</td><td class="ms-approval">Apr 28</td></tr>
+      <tr data-id="null"><td class="ms-date"><span class="date-display">Apr 20–21</span></td><td class="ms-name">On-Site Production Shoot</td><td class="ms-ws">On-Site Production</td><td style="font-size:11px;color:var(--muted)">Upcoming</td><td class="ms-dash">–</td></tr>
+      <tr data-id="11344830361"><td class="ms-date"><span class="date-display">Apr 21</span></td><td class="ms-name">Thematic Spotlight Videos Presented to Client</td><td class="ms-ws">Thematic Spotlights</td><td style="font-size:11px;color:var(--muted)">Upcoming</td><td class="ms-approval">Apr 24</td></tr>
+      <tr data-id="11278155641"><td class="ms-date"><span class="date-display">Apr 23</span></td><td class="ms-name">Final Messaging Guide Delivered to Client</td><td class="ms-ws">Messaging Guide</td><td style="font-size:11px;color:var(--muted)">Upcoming</td><td class="ms-dash">–</td></tr>
+      <tr data-id="11278179465"><td class="ms-date"><span class="date-display">May 1</span></td><td class="ms-name">Signature Brooker Brochure — Present First Draft</td><td class="ms-ws">Brooker Brochure</td><td style="font-size:11px;color:var(--muted)">Upcoming</td><td class="ms-approval">May 12</td></tr>
+      <tr data-id="11278177803"><td class="ms-date"><span class="date-display">May 10</span></td><td class="ms-name">Refreshed One-Sheet Profiles — Present First Draft</td><td class="ms-ws">One-Sheet Profiles</td><td style="font-size:11px;color:var(--muted)">Upcoming</td><td class="ms-approval">May 20</td></tr>
+      <tr data-id="11278161298"><td class="ms-date"><span class="date-display">May 12</span></td><td class="ms-name">Vision Video Presented to Client</td><td class="ms-ws">Vision Video</td><td style="font-size:11px;color:var(--muted)">Upcoming</td><td class="ms-approval">May 14</td></tr>
+      <tr data-id="11344392042"><td class="ms-date"><span class="date-display">May 14</span></td><td class="ms-name">Explainer / Overview Video Presented to Client</td><td class="ms-ws">Explainer Video</td><td style="font-size:11px;color:var(--muted)">Upcoming</td><td class="ms-approval">May 21</td></tr>
+      <tr data-id="null"><td class="ms-date"><span class="date-display">May 25–30</span></td><td class="ms-name">Thematic Spotlight Videos — Final Delivery</td><td class="ms-ws">Thematic Spotlights</td><td style="font-size:11px;color:var(--muted)">Upcoming</td><td class="ms-dash">–</td></tr>
+      <tr data-id="null"><td class="ms-date"><span class="date-display">May 31</span></td><td class="ms-name">Project Close</td><td class="ms-ws">Project Close-Out</td><td style="font-size:11px;color:var(--muted)">Upcoming</td><td class="ms-dash">–</td></tr>
+
+      <!-- ADD ROW FORM (hidden, team mode) -->
+      <tr class="add-row-form" id="add-row-form">
+        <td><input type="text" id="new-date" placeholder="e.g. Apr 14" style="width:100px"></td>
+        <td><input type="text" id="new-name" placeholder="Milestone name" style="width:100%"></td>
+        <td><input type="text" id="new-ws" placeholder="Workstream" style="width:100%"></td>
+        <td><select id="new-type"><option value="upcoming">Upcoming</option><option value="approval">Approval</option></select></td>
+        <td>
+          <span style="display:flex;gap:4px">
+            <button class="btn-save" onclick="addRow()">Add</button>
+            <button class="btn-cancel" onclick="closeAddForm()">Cancel</button>
+          </span>
+        </td>
+      </tr>
+
+    </tbody>
+  </table>
+
+  <button class="add-row-btn" onclick="openAddForm()">+ Add milestone</button>
+
+  <!-- PROJECT CLOSE -->
+  <div class="section-heading">Project Close-Out</div>
+  <table>
+    <thead><tr>
+      <th style="width:140px">Target Date</th>
+      <th>Milestone</th>
+      <th style="width:200px">Stony Brook Approval By</th>
+    </tr></thead>
+    <tbody>
+      <tr><td class="ms-date">May 31</td><td class="ms-name">Project Close — All Deliverables Complete</td><td class="ms-dash">–</td></tr>
+      <tr><td class="ms-date">May 31</td><td class="ms-name">90-Day Check-In Period Start</td><td class="ms-dash">–</td></tr>
+      <tr><td class="ms-date">Aug 29</td><td class="ms-name">90-Day Check-In Period End</td><td class="ms-dash">–</td></tr>
+    </tbody>
+  </table>
+
+  <!-- TEAM UNLOCK BUTTON — subtle, client won't notice -->
+  <div style="text-align:right;margin-top:24px">
+    <button onclick="unlockTeamMode()" style="background:none;border:none;color:#DDD;font-size:11px;cursor:pointer;font-family:'DM Sans',sans-serif;padding:4px 0;">Team</button>
+  </div>
+
   <footer class="doc-footer">
     <div class="footer-brand">Open Book</div>
     <div class="footer-note">
@@ -443,14 +893,33 @@ const BOARD_ID   = 18397531209;
 const MON_COL    = 'timerange_mm00qh4t';  // timeline column id
 
 // ─── INIT ────────────────────────────────────────
-const isTeam = location.href.indexOf('key=' + TEAM_KEY) !== -1;
+// Supports URL key, sessionStorage persistence, and password prompt fallback
+function isTeamMode() {
+  return location.href.indexOf('key=' + TEAM_KEY) !== -1
+      || sessionStorage.getItem('ob_team') === TEAM_KEY;
+}
 
-if (isTeam) {
+function enableTeamMode() {
+  if (document.body.classList.contains('team-mode')) return;
   document.body.classList.add('team-mode');
-  document.getElementById('footer-mode-note').textContent = 'Team mode — date edits sync to Monday.com';
+  sessionStorage.setItem('ob_team', TEAM_KEY);
+  document.getElementById('footer-mode-note').textContent =
+    'Team mode \u2014 date edits sync to Monday.com';
   activateEditable();
   activateDragSort();
 }
+
+function unlockTeamMode() {
+  const entered = prompt('Enter team password:');
+  if (entered === TEAM_KEY) {
+    enableTeamMode();
+    toast('Team mode unlocked \u2713');
+  } else if (entered !== null) {
+    toast('Incorrect password', true);
+  }
+}
+
+if (isTeamMode()) { enableTeamMode(); }
 
 // ─── DRAG TO REORDER ─────────────────────────────
 function activateDragSort() {
@@ -581,7 +1050,7 @@ function markAsDone(row) {
   toast('Milestone marked as done ✓');
 }
 
-
+function startEdit(el) {
   if (el.closest('tr').querySelector('.edit-wrap')) return; // already editing
   const original = el.textContent;
   const wrap = document.createElement('span');
@@ -694,7 +1163,306 @@ function addRow() {
   // Make the new date editable
   tr.querySelector('.date-display').addEventListener('click', function(){ startEdit(this); });
   // Add drag handle and make draggable
-  if (isTeam) {
+  if (isTeamMode()) {
+    const firstTd = tr.querySelector('td');
+    const handle = document.createElement('span');
+    handle.className = 'drag-handle';
+    handle.textContent = '⠿';
+    handle.title = 'Drag to reorder';
+    firstTd.prepend(handle);
+    tr.setAttribute('draggable', 'true');
+    activateDragSort();
+  }
+  closeAddForm();
+  toast('Milestone added ✓');
+}
+
+// ─── TOAST ────────────────────────────────────────
+function toast(msg, isErr) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast show' + (isErr ? ' err' : '');
+  setTimeout(() => t.className = 'toast', 2600);
+}
+</script>
+</body>
+</html>
+'; // paste your Monday API key here on deploy
+const BOARD_ID   = 18397531209;
+const MON_COL    = 'timerange_mm00qh4t';  // timeline column id
+
+// ─── INIT ────────────────────────────────────────
+// Supports URL key, sessionStorage persistence, and password prompt fallback
+function isTeamMode() {
+  return location.href.indexOf('key=' + TEAM_KEY) !== -1
+      || sessionStorage.getItem('ob_team') === TEAM_KEY;
+}
+
+function enableTeamMode() {
+  if (document.body.classList.contains('team-mode')) return;
+  document.body.classList.add('team-mode');
+  sessionStorage.setItem('ob_team', TEAM_KEY);
+  document.getElementById('footer-mode-note').textContent =
+    'Team mode \u2014 date edits sync to Monday.com';
+  activateEditable();
+  activateDragSort();
+}
+
+function unlockTeamMode() {
+  const entered = prompt('Enter team password:');
+  if (entered === TEAM_KEY) {
+    enableTeamMode();
+    toast('Team mode unlocked \u2713');
+  } else if (entered !== null) {
+    toast('Incorrect password', true);
+  }
+}
+
+if (isTeamMode()) { enableTeamMode(); }
+
+// ─── DRAG TO REORDER ─────────────────────────────
+function activateDragSort() {
+  const tbody = document.getElementById('ms-body');
+  let dragged = null;
+
+  // Add drag handle to every editable milestone row
+  tbody.querySelectorAll('tr[data-id]').forEach(row => {
+    if (row.id === 'add-row-form') return;
+    const firstTd = row.querySelector('td');
+    if (!firstTd) return;
+    const handle = document.createElement('span');
+    handle.className = 'drag-handle';
+    handle.textContent = '⠿';
+    handle.title = 'Drag to reorder';
+    firstTd.prepend(handle);
+
+    row.setAttribute('draggable', 'true');
+
+    row.addEventListener('dragstart', e => {
+      dragged = row;
+      setTimeout(() => row.classList.add('dragging'), 0);
+      e.dataTransfer.effectAllowed = 'move';
+    });
+
+    row.addEventListener('dragend', () => {
+      row.classList.remove('dragging');
+      tbody.querySelectorAll('tr').forEach(r => r.classList.remove('drag-over'));
+      dragged = null;
+    });
+
+    row.addEventListener('dragover', e => {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'move';
+      if (row !== dragged) {
+        tbody.querySelectorAll('tr').forEach(r => r.classList.remove('drag-over'));
+        row.classList.add('drag-over');
+      }
+    });
+
+    row.addEventListener('drop', e => {
+      e.preventDefault();
+      if (dragged && dragged !== row) {
+        const rows = Array.from(tbody.querySelectorAll('tr[data-id]:not(#add-row-form)'));
+        const dragIdx = rows.indexOf(dragged);
+        const dropIdx = rows.indexOf(row);
+        const addForm = document.getElementById('add-row-form');
+        if (dragIdx < dropIdx) {
+          row.after(dragged);
+        } else {
+          row.before(dragged);
+        }
+        // Re-attach drag handle events for the moved row
+        row.classList.remove('drag-over');
+        toast('Row moved ✓');
+      }
+    });
+  });
+
+  // Allow drop on tbody itself (when dragging below all rows)
+  tbody.addEventListener('dragover', e => e.preventDefault());
+}
+
+// ─── MAKE DATES EDITABLE + MARK AS DONE (team mode) ─────────────
+function activateEditable() {
+  document.querySelectorAll('tr[data-id]').forEach(row => {
+    if (row.id === 'add-row-form') return;
+    if (row.classList.contains('row-done')) return;
+
+    // Make date editable
+    const dateEl = row.querySelector('.date-display');
+    if (dateEl) {
+      dateEl.classList.add('editable');
+      dateEl.title = 'Click to edit date';
+      dateEl.addEventListener('click', () => startEdit(dateEl));
+    }
+
+    // Add Mark as Done button to name cell
+    if (!row.querySelector('.done-btn')) {
+      const nameCell = row.cells[1];
+      if (nameCell) {
+        const btn = document.createElement('button');
+        btn.className = 'done-btn';
+        btn.textContent = '✓ Mark done';
+        btn.title = 'Mark this milestone as complete';
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          markAsDone(row);
+        });
+        nameCell.appendChild(btn);
+      }
+    }
+  });
+}
+
+function markAsDone(row) {
+  // Convert row styling to done
+  row.classList.remove('row-approval');
+  row.classList.add('row-done');
+  row.removeAttribute('draggable');
+
+  // Get the current date text
+  const dateEl = row.querySelector('.date-display, .editable');
+  const dateText = dateEl ? dateEl.textContent : '–';
+
+  // Replace date cell — remove editable, just show date in done style
+  const dateCell = row.cells[0];
+  dateCell.innerHTML = `<span class="ms-date">${dateText}</span>`;
+
+  // Replace status cell (index 3)
+  const statusCell = row.cells[3];
+  if (statusCell) statusCell.innerHTML = `<span class="done-check">✓ Done</span>`;
+
+  // Replace approval cell (index 4) with dash
+  const approvalCell = row.cells[4];
+  if (approvalCell) { approvalCell.innerHTML = '–'; approvalCell.className = 'ms-dash'; }
+
+  // Remove done button and drag handle from name cell
+  const nameCell = row.cells[1];
+  if (nameCell) {
+    nameCell.querySelector('.done-btn')?.remove();
+    nameCell.querySelector('.drag-handle')?.remove();
+  }
+
+  // Remove drag handle from date cell
+  dateCell.querySelector('.drag-handle')?.remove();
+
+  toast('Milestone marked as done ✓');
+}
+
+function startEdit(el) {
+  if (el.closest('tr').querySelector('.edit-wrap')) return; // already editing
+  const original = el.textContent;
+  const wrap = document.createElement('span');
+  wrap.className = 'edit-wrap';
+  wrap.innerHTML = `
+    <input type="text" value="${original}" id="ei-${Date.now()}">
+    <button class="btn-save">Save</button>
+    <button class="btn-cancel">✕</button>
+    <span class="saving-msg" style="display:none">Saving…</span>
+  `;
+  el.replaceWith(wrap);
+  const input = wrap.querySelector('input');
+  input.focus(); input.select();
+  wrap.querySelector('.btn-save').onclick  = () => commitEdit(wrap, original);
+  wrap.querySelector('.btn-cancel').onclick = () => cancelEdit(wrap, original);
+  input.addEventListener('keydown', e => {
+    if (e.key === 'Enter') commitEdit(wrap, original);
+    if (e.key === 'Escape') cancelEdit(wrap, original);
+  });
+}
+
+function cancelEdit(wrap, original) {
+  const span = document.createElement('span');
+  span.className = 'date-display editable';
+  span.title = 'Click to edit date';
+  span.textContent = original;
+  span.addEventListener('click', () => startEdit(span));
+  wrap.replaceWith(span);
+}
+
+async function commitEdit(wrap, original) {
+  const input = wrap.querySelector('input');
+  const newVal = input.value.trim();
+  if (!newVal || newVal === original) { cancelEdit(wrap, original); return; }
+  const saving = wrap.querySelector('.saving-msg');
+  saving.style.display = 'inline';
+  wrap.querySelector('.btn-save').disabled = true;
+  wrap.querySelector('.btn-cancel').disabled = true;
+
+  const row = wrap.closest('tr');
+  const subitemId = row.dataset.id;
+
+  if (subitemId && subitemId !== 'null' && MON_TOKEN !== 'YOUR_MONDAY_API_KEY') {
+    try {
+      await syncMonday(subitemId, newVal);
+      toast('Updated in Monday ✓');
+    } catch(e) {
+      toast('Saved — Monday sync failed', true);
+    }
+  } else {
+    toast('Date updated ✓');
+  }
+
+  const span = document.createElement('span');
+  span.className = 'date-display editable';
+  span.title = 'Click to edit date';
+  span.textContent = newVal;
+  span.addEventListener('click', () => startEdit(span));
+  wrap.replaceWith(span);
+}
+
+// ─── MONDAY SYNC ─────────────────────────────────
+async function syncMonday(subitemId, dateStr) {
+  const mon = { Jan:'01',Feb:'02',Mar:'03',Apr:'04',May:'05',Jun:'06',
+                Jul:'07',Aug:'08',Sep:'09',Oct:'10',Nov:'11',Dec:'12' };
+  const m = dateStr.match(/([A-Za-z]{3})\w*\s+(\d+)/);
+  if (!m) throw new Error('unparseable date');
+  const iso = `2026-${mon[m[1]]}-${m[2].padStart(2,'0')}`;
+  const val = JSON.stringify({ from: iso, to: iso });
+  const q = `mutation{change_column_value(board_id:${BOARD_ID},item_id:${subitemId},column_id:"${MON_COL}",value:${JSON.stringify(val)}){id}}`;
+  const r = await fetch('https://api.monday.com/v2', {
+    method:'POST',
+    headers:{'Content-Type':'application/json','Authorization':MON_TOKEN,'API-Version':'2024-01'},
+    body: JSON.stringify({query:q})
+  });
+  const d = await r.json();
+  if (d.errors) throw new Error(d.errors[0].message);
+}
+
+// ─── ADD MILESTONE ────────────────────────────────
+function openAddForm() {
+  document.getElementById('add-row-form').classList.add('open');
+  document.getElementById('new-name').focus();
+}
+function closeAddForm() {
+  document.getElementById('add-row-form').classList.remove('open');
+  ['new-date','new-name','new-ws'].forEach(id => document.getElementById(id).value = '');
+}
+function addRow() {
+  const date = document.getElementById('new-date').value.trim();
+  const name = document.getElementById('new-name').value.trim();
+  const ws   = document.getElementById('new-ws').value.trim();
+  const type = document.getElementById('new-type').value;
+  if (!date || !name) { toast('Date and milestone name required', true); return; }
+
+  const isApproval = type === 'approval';
+  const tr = document.createElement('tr');
+  if (isApproval) tr.classList.add('row-approval');
+  tr.dataset.id = 'null';
+  tr.innerHTML = `
+    <td class="ms-date"><span class="date-display editable" title="Click to edit date">${date}</span></td>
+    <td class="ms-name">${name}</td>
+    <td class="ms-ws">${ws}</td>
+    <td style="font-size:11px;${isApproval ? 'font-weight:600;color:var(--approval-text)' : 'color:var(--muted)'}">${isApproval ? 'Approval' : 'Upcoming'}</td>
+    <td class="ms-dash">–</td>
+  `;
+  // Insert before the add-row-form row
+  const form = document.getElementById('add-row-form');
+  form.parentNode.insertBefore(tr, form);
+  // Make the new date editable
+  tr.querySelector('.date-display').addEventListener('click', function(){ startEdit(this); });
+  // Add drag handle and make draggable
+  if (isTeamMode()) {
     const firstTd = tr.querySelector('td');
     const handle = document.createElement('span');
     handle.className = 'drag-handle';
