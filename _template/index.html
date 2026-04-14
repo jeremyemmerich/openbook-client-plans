@@ -149,8 +149,6 @@
 
   /* TABLES */
   table { width: 100%; border-collapse: collapse; margin-bottom: 8px; font-size: 13px; }
-  .tbl-milestones { table-layout: fixed; }
-  .tbl-milestones td { overflow-wrap: break-word; }
   thead tr { background: var(--navy); }
   thead th {
     font-size: 10.5px; font-weight: 600;
@@ -297,11 +295,11 @@
   <div class="section-heading">Key Milestones + Sign-Off Dates</div>
   <table class="tbl-milestones">
     <thead><tr>
-      <th style="width:80px">Target Date</th>
-      <th>Milestone</th>
-      <th style="width:110px" class="ms-ws">Workstream</th>
-      <th style="width:70px">Status</th>
-      <th style="width:110px">Notes</th>
+      <th style="width:9%">Target Date</th>
+      <th style="width:42%">Milestone</th>
+      <th style="width:20%" class="ms-ws">Workstream</th>
+      <th style="width:11%">Status</th>
+      <th style="width:18%">Notes</th>
     </tr></thead>
     <tbody>
       {% for item in milestones %}

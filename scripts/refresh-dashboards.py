@@ -218,6 +218,11 @@ class Subitem:
         self.date = parse_date(raw, COL_SUBITEM_DATE)
         self.type = get_subitem_type(raw)
         self.notes = get_col_text(raw, COL_SUBITEM_NOTES)
+        # Store raw status text for in-progress detection
+        self._status_text = ""
+        for col in raw.get("column_values", []):
+            if col["id"] in ("status", "status_1"):
+                self._status_text = (col.get("text") or "").strip()
 
 
 class Workstream:
@@ -229,12 +234,14 @@ class Workstream:
         self.sow_hours = get_col_text(raw, COL_SOW_HOURS)
 
         all_subs = [Subitem(s) for s in raw.get("subitems", [])]
+        self.all_subitems = all_subs
         self.visible_subitems = [s for s in all_subs if s.visible]
 
     @property
     def status(self) -> str:
-        """Derive workstream status from its visible subitems."""
-        subs = self.visible_subitems
+        """Derive workstream status from ALL subitems (not just visible).
+        If any subitem is done or in-progress, the workstream is active."""
+        subs = self.all_subitems
         if not subs:
             return "upcoming"
         done = [s for s in subs if s.done]
@@ -242,6 +249,10 @@ class Workstream:
             return "complete"
         if done:
             return "active"
+        # Also check for in-progress via status column text
+        for s_raw in subs:
+            if not s_raw.done and s_raw._status_text in ("Working on it",):
+                return "active"
         return "upcoming"
 
     @property
