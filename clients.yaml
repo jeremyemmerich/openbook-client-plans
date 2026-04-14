@@ -9,12 +9,7 @@ clients:
     kickoff_date: "2025-11-17"
     close_date: "2026-08-31"
     project_type: linear
-    phases:
-      - SIGN-TO-START
-      - KNOW
-      - SHOW
-      - BUILD
-      - CLOSE-OUT
+    # phases auto-derived from Monday's Phase column, sorted by earliest date
 
   - slug: kehe
     display_name: "KeHE 2026\u201327 Partnership"
@@ -25,4 +20,6 @@ clients:
     deliverables:
       - 2025 Impact Report
       - Impact Video Reskin
-      # Add more as scoped — names must match Monday workstream names exactly
+      - Owners & Donors Video
+      - Website 1.5 Updates
+      - Brand Guidelines + Training

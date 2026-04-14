@@ -265,9 +265,33 @@ class Workstream:
 
 # ── Phase / Deliverable tracker ───────────────────────────────────
 
-def compute_linear_phases(phase_names: list[str], workstreams: list[Workstream],
+def _auto_derive_phases(workstreams: list[Workstream]) -> list[str]:
+    """Auto-derive phase order from workstreams by sorting on earliest subitem date."""
+    SKIP_PHASES = {"N/A", "Project Management", "Consulting", ""}
+    phase_earliest: dict[str, date | None] = {}
+
+    for ws in workstreams:
+        p = ws.phase
+        if not p or p in SKIP_PHASES or not ws.visible_subitems:
+            continue
+        dates = sorted([s.date for s in ws.visible_subitems if s.date])
+        earliest = dates[0] if dates else None
+        if p not in phase_earliest or (earliest and (phase_earliest[p] is None or earliest < phase_earliest[p])):
+            phase_earliest[p] = earliest
+
+    # Sort by earliest date, nulls last
+    return [p for p, _ in sorted(phase_earliest.items(), key=lambda x: x[1] or date.max)]
+
+
+def compute_linear_phases(phase_names: list[str] | None, workstreams: list[Workstream],
                           is_closed: bool) -> list[dict]:
-    """Compute phase states for a linear project."""
+    """Compute phase states for a linear project.
+    If phase_names is None/empty, auto-derive from Monday's Phase column."""
+    if not phase_names:
+        phase_names = _auto_derive_phases(workstreams)
+        if phase_names:
+            print(f"  Auto-derived phases: {' → '.join(phase_names)}")
+
     steps = []
     active_found = False
 
@@ -296,13 +320,6 @@ def compute_linear_phases(phase_names: list[str], workstreams: list[Workstream],
             state = "complete" if is_closed else "upcoming"
             steps.append({"name": phase_name, "state": state, "window": ""})
 
-    # Log warnings for workstreams with phases not in config
-    known = set(phase_names)
-    for ws in workstreams:
-        if ws.phase and ws.phase not in known and ws.visible_subitems:
-            print(f"  WARNING: Workstream '{ws.name}' has phase '{ws.phase}' "
-                  f"not listed in clients.yaml — skipping phase contribution")
-
     return steps
 
 
@@ -328,10 +345,61 @@ def compute_ongoing_deliverables(deliverable_names: list[str],
 
 # ── Build milestone list ──────────────────────────────────────────
 
-def build_milestones(workstreams: list[Workstream]) -> list[dict]:
+MONTH_NAMES = {
+    "january", "february", "march", "april", "may", "june",
+    "july", "august", "september", "october", "november", "december",
+}
+
+
+def _is_recurring_workstream(ws: Workstream) -> bool:
+    """Detect recurring-meeting workstreams (e.g. 'Monthly Meetings + Status Updates')."""
+    if len(ws.visible_subitems) < 5:
+        return False
+    name_lower = ws.name.lower()
+    if "meeting" in name_lower or "recurring" in name_lower:
+        # Check if most subitem names start with a month name
+        month_hits = sum(
+            1 for s in ws.visible_subitems
+            if s.name.split()[0].lower().rstrip(",") in MONTH_NAMES
+            or any(m in s.name.lower() for m in MONTH_NAMES)
+        )
+        return month_hits >= len(ws.visible_subitems) * 0.6
+    return False
+
+
+def build_milestones(workstreams: list[Workstream], client_cfg: dict) -> list[dict]:
     """Build sorted milestone list from all visible subitems across workstreams."""
     milestones = []
+    kickoff = client_cfg.get("kickoff_date", "")
+    close = client_cfg.get("close_date", "")
+
     for ws in workstreams:
+        # Consolidate recurring-meeting workstreams into one summary row
+        if _is_recurring_workstream(ws):
+            # Build a date range string from config dates
+            try:
+                k = date.fromisoformat(kickoff) if kickoff else None
+                c = date.fromisoformat(close) if close else None
+            except ValueError:
+                k, c = None, None
+            range_str = ""
+            if k and c:
+                range_str = f"{k.strftime('%b %Y')} – {c.strftime('%b %Y')}"
+
+            milestones.append({
+                "name": "All-Team Status Meetings",
+                "workstream": ws.name,
+                "date": None,
+                "date_display": "Monthly",
+                "done": False,
+                "is_milestone": True,
+                "is_approval": False,
+                "type": "Recurring",
+                "notes": f"Monthly cadence {range_str}" if range_str else "Monthly cadence",
+                "row_class": "",
+            })
+            continue
+
         for sub in ws.visible_subitems:
             is_approval = sub.type in ("Approval Needed", "Client Meeting")
             row_classes = []
@@ -349,7 +417,8 @@ def build_milestones(workstreams: list[Workstream]) -> list[dict]:
                 "date_display": format_date(sub.date),
                 "done": sub.done,
                 "is_milestone": sub.is_milestone,
-                "type": sub.type if is_approval else ("" if sub.done else ""),
+                "is_approval": is_approval,
+                "type": sub.type,
                 "notes": sub.notes,
                 "row_class": " ".join(row_classes),
             })
@@ -415,9 +484,9 @@ def render_client(client_cfg: dict, token: str, jinja_env: Environment) -> str |
     # Compute tracker
     project_type = client_cfg.get("project_type", "linear")
     tracker_steps = []
-    if project_type == "linear" and client_cfg.get("phases"):
+    if project_type == "linear":
         tracker_steps = compute_linear_phases(
-            client_cfg["phases"], workstreams, is_closed
+            client_cfg.get("phases"), workstreams, is_closed
         )
     elif project_type == "ongoing" and client_cfg.get("deliverables"):
         tracker_steps = compute_ongoing_deliverables(
@@ -425,7 +494,7 @@ def render_client(client_cfg: dict, token: str, jinja_env: Environment) -> str |
         )
 
     # Build milestones
-    milestones = build_milestones(visible_workstreams)
+    milestones = build_milestones(visible_workstreams, client_cfg)
     print(f"  {len(milestones)} visible milestones/tasks")
 
     # Check-in end date (90 days after close)
