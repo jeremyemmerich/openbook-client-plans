@@ -428,13 +428,13 @@
     wsSelect.appendChild(opt);
   });
 
-  var activeStatus = 'all';
+  var activeStatuses = new Set(); // empty = show all
 
   function applyFilters() {
     var wsVal = wsSelect.value;
     var visible = 0;
     rows.forEach(function(r) {
-      var matchStatus = activeStatus === 'all' || r.dataset.status === activeStatus;
+      var matchStatus = activeStatuses.size === 0 || activeStatuses.has(r.dataset.status);
       var matchWs = wsVal === 'all' || r.dataset.ws === wsVal;
       if (matchStatus && matchWs) {
         r.classList.remove('ms-hidden');
@@ -454,11 +454,34 @@
     }
   }
 
+  var allBtn = document.querySelector('.filter-btn[data-filter="all"]');
+
+  function updateAllBtn() {
+    if (activeStatuses.size === 0) {
+      allBtn.classList.add('active');
+    } else {
+      allBtn.classList.remove('active');
+    }
+  }
+
   buttons.forEach(function(btn) {
     btn.addEventListener('click', function() {
-      buttons.forEach(function(b) { b.classList.remove('active'); });
-      btn.classList.add('active');
-      activeStatus = btn.dataset.filter;
+      var f = btn.dataset.filter;
+      if (f === 'all') {
+        // Clear all selections
+        activeStatuses.clear();
+        buttons.forEach(function(b) { b.classList.remove('active'); });
+      } else {
+        // Toggle this filter
+        if (activeStatuses.has(f)) {
+          activeStatuses.delete(f);
+          btn.classList.remove('active');
+        } else {
+          activeStatuses.add(f);
+          btn.classList.add('active');
+        }
+      }
+      updateAllBtn();
       applyFilters();
     });
   });

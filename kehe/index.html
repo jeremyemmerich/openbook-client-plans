@@ -413,14 +413,14 @@
     <tbody>
       
       <tr class="row-done" data-status="done" data-ws="2025 Impact Report">
-        <td class="ms-date">Apr 16</td>
+        <td class="ms-date">Apr 10</td>
         <td class="ms-name">Listening Session — 2025 ideas, data needs, story, update desires<span class="ms-type-label">Client Meeting</span></td>
         <td class="ms-ws">2025 Impact Report</td>
         <td class="ms-type">
           <span class="done-check">✓ Done</span>
           
         </td>
-        <td class="ms-notes"></td>
+        <td class="ms-notes">TESTING NOTES</td>
       </tr>
       
       <tr class="row-approval" data-status="key-meeting" data-ws="New Scope Start-Up + Alignment">
@@ -784,7 +784,7 @@
 
 </div><!-- /.page -->
 
-<!-- LAST-UPDATED: 2026-04-13 21:11 CT -->
+<!-- LAST-UPDATED: 2026-04-14 10:18 CT -->
 
 <script>
 (function colorWorkstreams() {
@@ -841,13 +841,13 @@
     wsSelect.appendChild(opt);
   });
 
-  var activeStatus = 'all';
+  var activeStatuses = new Set(); // empty = show all
 
   function applyFilters() {
     var wsVal = wsSelect.value;
     var visible = 0;
     rows.forEach(function(r) {
-      var matchStatus = activeStatus === 'all' || r.dataset.status === activeStatus;
+      var matchStatus = activeStatuses.size === 0 || activeStatuses.has(r.dataset.status);
       var matchWs = wsVal === 'all' || r.dataset.ws === wsVal;
       if (matchStatus && matchWs) {
         r.classList.remove('ms-hidden');
@@ -867,11 +867,34 @@
     }
   }
 
+  var allBtn = document.querySelector('.filter-btn[data-filter="all"]');
+
+  function updateAllBtn() {
+    if (activeStatuses.size === 0) {
+      allBtn.classList.add('active');
+    } else {
+      allBtn.classList.remove('active');
+    }
+  }
+
   buttons.forEach(function(btn) {
     btn.addEventListener('click', function() {
-      buttons.forEach(function(b) { b.classList.remove('active'); });
-      btn.classList.add('active');
-      activeStatus = btn.dataset.filter;
+      var f = btn.dataset.filter;
+      if (f === 'all') {
+        // Clear all selections
+        activeStatuses.clear();
+        buttons.forEach(function(b) { b.classList.remove('active'); });
+      } else {
+        // Toggle this filter
+        if (activeStatuses.has(f)) {
+          activeStatuses.delete(f);
+          btn.classList.remove('active');
+        } else {
+          activeStatuses.add(f);
+          btn.classList.add('active');
+        }
+      }
+      updateAllBtn();
       applyFilters();
     });
   });
