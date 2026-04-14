@@ -11,6 +11,13 @@ clients:
     project_type: linear
     # phases auto-derived from Monday's Phase column, sorted by earliest date
 
+  - slug: holy-family
+    display_name: Holy Family
+    monday_group_id: group_mm01skcr
+    kickoff_date: "2026-02-17"
+    close_date: "2026-08-24"
+    project_type: linear
+
   - slug: mn-land-trust
     display_name: Minnesota Land Trust
     monday_group_id: group_mm0pn6br

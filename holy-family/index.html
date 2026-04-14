@@ -1,0 +1,669 @@
+<!-- AUTO-GENERATED. Edits will be overwritten. Source: _template/index.html + clients.yaml + Monday.com board 18397531209 -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Holy Family — Open Book Project Plan</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy:          #1C2E44;
+    --cream:         #FAFAF8;
+    --border:        #D8D4CE;
+    --text:          #1A1A18;
+    --muted:         #7A7670;
+    --done-bg:       #F2F4F0;
+    --done-text:     #4A6040;
+    --done-border:   #C8D4C0;
+    --approval-bg:   #FDF7EE;
+    --approval-text: #6A500A;
+    --active-bg:     #EEF3FF;
+    --active-text:   #2A4EA0;
+    --active-border: #C0CFFF;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { background: var(--cream); }
+  body {
+    font-family: 'DM Sans', sans-serif;
+    color: var(--text);
+    font-size: 13.5px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .page { max-width: 960px; margin: 0 auto; padding: 56px 40px 80px; }
+
+  /* HEADER */
+  .doc-header {
+    margin-bottom: 40px;
+    padding-bottom: 28px;
+    border-bottom: 2px solid var(--navy);
+  }
+  .doc-eyebrow {
+    font-size: 11px; font-weight: 600;
+    letter-spacing: .14em; text-transform: uppercase;
+    color: var(--muted); margin-bottom: 8px;
+  }
+  .doc-title {
+    font-family: 'Libre Baskerville', serif;
+    font-size: 30px; font-weight: 700;
+    color: var(--navy); line-height: 1.2; margin-bottom: 8px;
+  }
+  .doc-subtitle { font-size: 13px; color: var(--muted); font-weight: 300; }
+  .doc-dates {
+    margin-top: 10px;
+    font-size: 12px; color: var(--muted);
+    display: flex; gap: 24px; flex-wrap: wrap;
+  }
+  .doc-dates strong { color: var(--text); font-weight: 600; }
+
+  .section-heading {
+    font-family: 'Libre Baskerville', serif;
+    font-size: 17px; font-weight: 700;
+    color: var(--navy); margin: 36px 0 14px;
+  }
+
+  /* PHASE TRACKER */
+  .tracker {
+    display: flex;
+    align-items: stretch;
+    gap: 0;
+    margin: 14px 0 8px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    overflow: hidden;
+    background: #fff;
+  }
+  .tracker-step {
+    flex: 1 1 0;
+    padding: 14px 14px 12px;
+    min-width: 0;
+    border-right: 1px solid var(--border);
+    position: relative;
+  }
+  .tracker-step:last-child { border-right: none; }
+  .tracker-step .step-label {
+    font-size: 10.5px; font-weight: 600;
+    letter-spacing: .08em; text-transform: uppercase;
+    color: var(--muted); margin-bottom: 4px;
+  }
+  .tracker-step .step-name {
+    font-family: 'Libre Baskerville', serif;
+    font-size: 13.5px; color: var(--navy);
+    line-height: 1.25;
+  }
+  .tracker-step .step-window {
+    margin-top: 4px;
+    font-size: 11px; color: var(--muted);
+  }
+  .tracker-step.complete { background: var(--done-bg); }
+  .tracker-step.complete .step-label { color: var(--done-text); }
+  .tracker-step.complete .step-name  { color: var(--done-text); }
+  .tracker-step.active { background: var(--active-bg); }
+  .tracker-step.active .step-label { color: var(--active-text); }
+  .tracker-step.active .step-name  { color: var(--active-text); font-weight: 700; }
+  .tracker-step.upcoming .step-label { color: var(--muted); }
+  .tracker-step.upcoming .step-name  { color: var(--muted); }
+
+  /* CIRCLE TRACKER (ongoing / deliverable projects) */
+  .phase-row {
+    display: flex; align-items: flex-start; gap: 0;
+    position: relative; margin: 14px 0 8px;
+  }
+  .phase {
+    flex: 1; display: flex; flex-direction: column;
+    align-items: center; position: relative; z-index: 1;
+  }
+  .phase-circle {
+    width: 32px; height: 32px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 700; margin-bottom: 7px;
+    background: #fff;
+  }
+  .phase-circle.done   { background: #5B8A72; color: #fff; border: 2px solid #4A7A62; }
+  .phase-circle.active  { background: #2A4EA0; color: #fff; border: 2px solid #2A4EA0; box-shadow: 0 0 0 4px rgba(42,78,160,.15); }
+  .phase-circle.future  { background: #fff; color: #BBB; border: 2px solid var(--border); }
+  .phase-label {
+    font-size: 10px; font-weight: 600; text-align: center;
+    letter-spacing: .02em; line-height: 1.25; max-width: 90px;
+  }
+  .phase-label.done   { color: #4A7A62; }
+  .phase-label.active  { color: #2A4EA0; font-weight: 700; }
+  .phase-label.future  { color: #BBB; }
+  .phase-row::before {
+    content: ''; position: absolute; top: 15px; left: 5%; right: 5%;
+    height: 2.5px; background: var(--border); z-index: 0;
+  }
+
+  /* TYPE LABELS (inline with milestone names) */
+  .ms-type-label {
+    display: inline-block; font-size: 10px; font-weight: 600;
+    color: var(--muted); background: rgba(0,0,0,.04);
+    padding: 1px 6px; border-radius: 2px; margin-left: 8px;
+    vertical-align: middle; letter-spacing: .02em;
+  }
+  .row-done .ms-type-label { opacity: .5; }
+  .row-approval .ms-type-label { color: var(--approval-text); background: rgba(0,0,0,.04); }
+
+  /* TABLES */
+  table { width: 100%; border-collapse: collapse; margin-bottom: 8px; font-size: 13px; }
+  thead tr { background: var(--navy); }
+  thead th {
+    font-size: 10.5px; font-weight: 600;
+    letter-spacing: .1em; text-transform: uppercase;
+    color: rgba(255,255,255,0.75);
+    padding: 9px 13px; text-align: left; white-space: nowrap;
+  }
+  tbody tr { border-bottom: 1px solid var(--border); }
+  tbody tr:last-child { border-bottom: none; }
+  tbody td { padding: 10px 13px; vertical-align: top; line-height: 1.45; }
+
+  .tbl-overview tbody tr:nth-child(odd) { background: rgba(0,0,0,0.018); }
+  .col-ws { font-weight: 600; }
+  .col-window { color: var(--muted); }
+  .col-notes { color: var(--muted); font-size: 12px; }
+
+  .pill {
+    display: inline-block; font-size: 10.5px; font-weight: 600;
+    letter-spacing: .04em; padding: 2px 8px; border-radius: 3px; white-space: nowrap;
+  }
+  .pill-complete { background: var(--done-bg);   color: var(--done-text);   border: 1px solid var(--done-border); }
+  .pill-active   { background: var(--active-bg); color: var(--active-text); border: 1px solid var(--active-border); }
+  .pill-upcoming { background: #F5F4F0; color: #666; border: 1px solid #DDD; }
+
+  /* Milestone rows */
+  .row-done td      { background: var(--done-bg); color: #666; }
+  .row-done .ms-name { color: #555; }
+  .row-done .done-check { color: var(--done-text); font-weight: 600; font-size: 11px; }
+
+  .row-approval td      { background: var(--approval-bg); }
+  .row-approval .ms-date { color: var(--approval-text); font-weight: 700; }
+  .row-approval .ms-type { color: var(--approval-text); font-weight: 600; }
+
+  .row-task td      { color: var(--muted); }
+  .row-task .ms-name { font-weight: 400; }
+
+  .ms-name { font-weight: 500; }
+  .ms-date { font-variant-numeric: tabular-nums; white-space: nowrap; font-size: 12.5px; }
+  .ms-ws   { font-size: 12px; }
+  .ms-type { font-size: 11px; }
+  .ms-dash { color: #CCC; }
+  .ms-notes { color: var(--muted); font-size: 12px; font-style: italic; }
+
+  /* FROZEN / CLOSED STATE */
+  .closed-banner {
+    background: var(--done-bg);
+    border: 1px solid var(--done-border);
+    color: var(--done-text);
+    font-size: 12.5px; font-weight: 500;
+    padding: 10px 14px; border-radius: 4px;
+    margin-bottom: 20px;
+  }
+
+  /* EMPTY STATES */
+  .empty-row td {
+    color: var(--muted); font-style: italic;
+    text-align: center; padding: 18px 13px;
+  }
+
+  .doc-footer {
+    margin-top: 56px; padding-top: 18px;
+    border-top: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+    flex-wrap: wrap; gap: 10px;
+  }
+  .footer-brand { font-family: 'Libre Baskerville', serif; font-size: 13px; color: var(--muted); }
+  .footer-note  { font-size: 11px; color: var(--muted); text-align: right; }
+
+  @media print {
+    .page { padding: 20px; }
+    .tracker { page-break-inside: avoid; }
+  }
+  @media (max-width: 640px) {
+    .page { padding: 24px 20px 60px; }
+    .col-window, .col-notes, .ms-ws, .ms-notes { display: none; }
+    .tracker { flex-wrap: wrap; }
+    .tracker-step {
+      flex: 1 0 50%;
+      border-right: none;
+      border-bottom: 1px solid var(--border);
+    }
+  }
+</style>
+</head>
+<body>
+
+<div class="page">
+
+  <header class="doc-header">
+    <div class="doc-eyebrow">Open Book — Project Plan</div>
+    <div class="doc-title">Holy Family</div>
+    
+    <div class="doc-dates">
+      <div><strong>Kickoff:</strong> February 17, 2026</div>
+      <div><strong>Target close:</strong> August 24, 2026</div>
+    </div>
+  </header>
+
+  
+
+  
+  
+  <div class="section-heading">
+    Phase Progress
+  </div>
+  <div class="phase-row">
+    
+    <div class="phase">
+      <div class="phase-circle done">✓</div>
+      <div class="phase-label done">Know</div>
+    </div>
+    
+    <div class="phase">
+      <div class="phase-circle active">●</div>
+      <div class="phase-label active">Show</div>
+    </div>
+    
+    <div class="phase">
+      <div class="phase-circle future">○</div>
+      <div class="phase-label future">Build</div>
+    </div>
+    
+    <div class="phase">
+      <div class="phase-circle future">○</div>
+      <div class="phase-label future">Close-Out</div>
+    </div>
+    
+  </div>
+  
+
+  
+  <div class="section-heading">Project Overview</div>
+  <table class="tbl-overview">
+    <thead><tr>
+      <th style="width:38%">Workstream</th>
+      <th style="width:16%">Status</th>
+      <th style="width:20%" class="col-window">Timeline</th>
+      <th style="width:26%" class="col-notes">Notes</th>
+    </tr></thead>
+    <tbody>
+      
+      <tr>
+        <td class="col-ws">Kickoff Tasks</td>
+        <td><span class="pill pill-complete">Complete</span></td>
+        <td class="col-window">Feb – Mar</td>
+        <td class="col-notes"></td>
+      </tr>
+      
+      <tr>
+        <td class="col-ws">Know</td>
+        <td><span class="pill pill-complete">Complete</span></td>
+        <td class="col-window">Mar – Apr</td>
+        <td class="col-notes"></td>
+      </tr>
+      
+      <tr>
+        <td class="col-ws">Show Ways Forward Presentation</td>
+        <td><span class="pill pill-upcoming">Upcoming</span></td>
+        <td class="col-window">Apr 2026</td>
+        <td class="col-notes"></td>
+      </tr>
+      
+      <tr>
+        <td class="col-ws">Logo + Guidelines</td>
+        <td><span class="pill pill-upcoming">Upcoming</span></td>
+        <td class="col-window">May 2026</td>
+        <td class="col-notes"></td>
+      </tr>
+      
+      <tr>
+        <td class="col-ws">Microsite</td>
+        <td><span class="pill pill-active">In Progress</span></td>
+        <td class="col-window">Apr – May</td>
+        <td class="col-notes"></td>
+      </tr>
+      
+      <tr>
+        <td class="col-ws">2 Page Overview</td>
+        <td><span class="pill pill-upcoming">Upcoming</span></td>
+        <td class="col-window">Apr – May</td>
+        <td class="col-notes"></td>
+      </tr>
+      
+      <tr>
+        <td class="col-ws">Proposal Template</td>
+        <td><span class="pill pill-upcoming">Upcoming</span></td>
+        <td class="col-window">Apr – May</td>
+        <td class="col-notes"></td>
+      </tr>
+      
+      <tr>
+        <td class="col-ws">Project Close</td>
+        <td><span class="pill pill-upcoming">Upcoming</span></td>
+        <td class="col-window">May – Aug</td>
+        <td class="col-notes"></td>
+      </tr>
+      
+    </tbody>
+  </table>
+
+  
+  <div class="section-heading">Key Milestones + Sign-Off Dates</div>
+  <table class="tbl-milestones">
+    <thead><tr>
+      <th style="width:9%">Target Date</th>
+      <th style="width:42%">Milestone</th>
+      <th style="width:20%" class="ms-ws">Workstream</th>
+      <th style="width:11%">Status</th>
+      <th style="width:18%">Notes</th>
+    </tr></thead>
+    <tbody>
+      
+      <tr class="row-done">
+        <td class="ms-date">Feb 19</td>
+        <td class="ms-name">Schedule Kickoff Meeting<span class="ms-type-label">Planning</span></td>
+        <td class="ms-ws">Kickoff Tasks</td>
+        <td class="ms-type">
+          <span class="done-check">✓ Done</span>
+          
+        </td>
+        <td class="ms-notes"></td>
+      </tr>
+      
+      <tr class="row-done">
+        <td class="ms-date">Feb 19</td>
+        <td class="ms-name">Send Welcome + KO Email<span class="ms-type-label">Email Deliverable</span></td>
+        <td class="ms-ws">Kickoff Tasks</td>
+        <td class="ms-type">
+          <span class="done-check">✓ Done</span>
+          
+        </td>
+        <td class="ms-notes"></td>
+      </tr>
+      
+      <tr class="row-done">
+        <td class="ms-date">Mar 10</td>
+        <td class="ms-name">Client Kickoff Meeting<span class="ms-type-label">Client Meeting</span></td>
+        <td class="ms-ws">Kickoff Tasks</td>
+        <td class="ms-type">
+          <span class="done-check">✓ Done</span>
+          
+        </td>
+        <td class="ms-notes"></td>
+      </tr>
+      
+      <tr class="row-done">
+        <td class="ms-date">Mar 12</td>
+        <td class="ms-name">Send follow up email to client / Share Interview Request Template with Client<span class="ms-type-label">Email Deliverable</span></td>
+        <td class="ms-ws">Kickoff Tasks</td>
+        <td class="ms-type">
+          <span class="done-check">✓ Done</span>
+          
+        </td>
+        <td class="ms-notes"></td>
+      </tr>
+      
+      <tr class="row-done">
+        <td class="ms-date">Mar 12</td>
+        <td class="ms-name">Schedule discovery conversations<span class="ms-type-label">Planning</span></td>
+        <td class="ms-ws">Know</td>
+        <td class="ms-type">
+          <span class="done-check">✓ Done</span>
+          
+        </td>
+        <td class="ms-notes"></td>
+      </tr>
+      
+      <tr class="row-done">
+        <td class="ms-date">Mar 18</td>
+        <td class="ms-name">Conduct discovery conversations<span class="ms-type-label">Client Meeting</span></td>
+        <td class="ms-ws">Know</td>
+        <td class="ms-type">
+          <span class="done-check">✓ Done</span>
+          
+        </td>
+        <td class="ms-notes"></td>
+      </tr>
+      
+      <tr class="row-done">
+        <td class="ms-date">Apr 1</td>
+        <td class="ms-name">Calibration + Work Session on Project Learnings<span class="ms-type-label">Client Meeting</span></td>
+        <td class="ms-ws">Know</td>
+        <td class="ms-type">
+          <span class="done-check">✓ Done</span>
+          
+        </td>
+        <td class="ms-notes"></td>
+      </tr>
+      
+      <tr class="row-approval">
+        <td class="ms-date">Apr 23</td>
+        <td class="ms-name">Show Ways Forward Presentation to Client<span class="ms-type-label">Client Meeting</span></td>
+        <td class="ms-ws">Show Ways Forward Presentation</td>
+        <td class="ms-type">
+          <span style="font-weight:600;color:var(--approval-text)">Key Meeting</span>
+          
+        </td>
+        <td class="ms-notes"></td>
+      </tr>
+      
+      <tr class="row-approval">
+        <td class="ms-date">Apr 23</td>
+        <td class="ms-name">Present Microsite Mockup<span class="ms-type-label">Client Meeting</span></td>
+        <td class="ms-ws">Microsite</td>
+        <td class="ms-type">
+          <span style="font-weight:600;color:var(--approval-text)">Key Meeting</span>
+          
+        </td>
+        <td class="ms-notes"></td>
+      </tr>
+      
+      <tr class="row-task">
+        <td class="ms-date">May 4</td>
+        <td class="ms-name">Align on Domain / Hosting Information<span class="ms-type-label">Planning</span></td>
+        <td class="ms-ws">Microsite</td>
+        <td class="ms-type">
+          <span style="color:var(--muted)">Upcoming</span>
+        </td>
+        <td class="ms-notes"></td>
+      </tr>
+      
+      <tr class="">
+        <td class="ms-date">May 6</td>
+        <td class="ms-name">Approval to build Microsite<span class="ms-type-label">Decision</span></td>
+        <td class="ms-ws">Microsite</td>
+        <td class="ms-type">
+          <span style="color:var(--muted)">Upcoming</span>
+        </td>
+        <td class="ms-notes"></td>
+      </tr>
+      
+      <tr class="row-approval">
+        <td class="ms-date">May 6</td>
+        <td class="ms-name">Present First Draft to Client<span class="ms-type-label">Client Meeting</span></td>
+        <td class="ms-ws">Proposal Template</td>
+        <td class="ms-type">
+          <span style="font-weight:600;color:var(--approval-text)">Key Meeting</span>
+          
+        </td>
+        <td class="ms-notes"></td>
+      </tr>
+      
+      <tr class="">
+        <td class="ms-date">May 12</td>
+        <td class="ms-name">Send Logo Files + Brand One-Sheet to Client<span class="ms-type-label">Email Deliverable</span></td>
+        <td class="ms-ws">Logo + Guidelines</td>
+        <td class="ms-type">
+          <span style="color:var(--muted)">Upcoming</span>
+        </td>
+        <td class="ms-notes"></td>
+      </tr>
+      
+      <tr class="row-approval">
+        <td class="ms-date">May 12</td>
+        <td class="ms-name">Presentation of 2 Page Overview<span class="ms-type-label">Client Meeting</span></td>
+        <td class="ms-ws">2 Page Overview</td>
+        <td class="ms-type">
+          <span style="font-weight:600;color:var(--approval-text)">Key Meeting</span>
+          
+        </td>
+        <td class="ms-notes"></td>
+      </tr>
+      
+      <tr class="row-task">
+        <td class="ms-date">May 15</td>
+        <td class="ms-name">Receive final client feedback/approval<span class="ms-type-label">Decision</span></td>
+        <td class="ms-ws">Proposal Template</td>
+        <td class="ms-type">
+          <span style="color:var(--muted)">Upcoming</span>
+        </td>
+        <td class="ms-notes"></td>
+      </tr>
+      
+      <tr class="">
+        <td class="ms-date">May 16</td>
+        <td class="ms-name">Send to Print or to Client<span class="ms-type-label">Email Deliverable</span></td>
+        <td class="ms-ws">Proposal Template</td>
+        <td class="ms-type">
+          <span style="color:var(--muted)">Upcoming</span>
+        </td>
+        <td class="ms-notes"></td>
+      </tr>
+      
+      <tr class="row-approval">
+        <td class="ms-date">May 18</td>
+        <td class="ms-name">Present Full Page to Client<span class="ms-type-label">Client Meeting</span></td>
+        <td class="ms-ws">Microsite</td>
+        <td class="ms-type">
+          <span style="font-weight:600;color:var(--approval-text)">Key Meeting</span>
+          
+        </td>
+        <td class="ms-notes"></td>
+      </tr>
+      
+      <tr class="row-task">
+        <td class="ms-date">May 18</td>
+        <td class="ms-name">Revision + Refinement<span class="ms-type-label">TOB Work</span></td>
+        <td class="ms-ws">Microsite</td>
+        <td class="ms-type">
+          <span style="color:var(--muted)">Upcoming</span>
+        </td>
+        <td class="ms-notes"></td>
+      </tr>
+      
+      <tr class="row-task">
+        <td class="ms-date">May 20</td>
+        <td class="ms-name">Receive Final Approval<span class="ms-type-label">Decision</span></td>
+        <td class="ms-ws">2 Page Overview</td>
+        <td class="ms-type">
+          <span style="color:var(--muted)">Upcoming</span>
+        </td>
+        <td class="ms-notes"></td>
+      </tr>
+      
+      <tr class="">
+        <td class="ms-date">May 22</td>
+        <td class="ms-name">Launch site<span class="ms-type-label">Client Work</span></td>
+        <td class="ms-ws">Microsite</td>
+        <td class="ms-type">
+          <span style="color:var(--muted)">Upcoming</span>
+        </td>
+        <td class="ms-notes"></td>
+      </tr>
+      
+      <tr class="row-approval">
+        <td class="ms-date">May 25</td>
+        <td class="ms-name">Website Training<span class="ms-type-label">Client Meeting</span></td>
+        <td class="ms-ws">Microsite</td>
+        <td class="ms-type">
+          <span style="font-weight:600;color:var(--approval-text)">Key Meeting</span>
+          
+        </td>
+        <td class="ms-notes"></td>
+      </tr>
+      
+      <tr class="row-task">
+        <td class="ms-date">May 26</td>
+        <td class="ms-name">90-day check in period start</td>
+        <td class="ms-ws">Project Close</td>
+        <td class="ms-type">
+          <span style="color:var(--muted)">Upcoming</span>
+        </td>
+        <td class="ms-notes"></td>
+      </tr>
+      
+      <tr class="">
+        <td class="ms-date">May 28</td>
+        <td class="ms-name">MILESTONE: Send Project Close Email to Client<span class="ms-type-label">Email Deliverable</span></td>
+        <td class="ms-ws">Project Close</td>
+        <td class="ms-type">
+          <span style="color:var(--muted)">Upcoming</span>
+        </td>
+        <td class="ms-notes"></td>
+      </tr>
+      
+      <tr class="row-task">
+        <td class="ms-date">Aug 24</td>
+        <td class="ms-name">90-day check in period end</td>
+        <td class="ms-ws">Project Close</td>
+        <td class="ms-type">
+          <span style="color:var(--muted)">Upcoming</span>
+        </td>
+        <td class="ms-notes"></td>
+      </tr>
+      
+    </tbody>
+  </table>
+
+
+  <footer class="doc-footer">
+    <div class="footer-brand">Open Book</div>
+    <div class="footer-note">
+      teamopenbook.com · Minneapolis, MN<br>
+      For questions, contact your Open Book project lead.
+    </div>
+  </footer>
+
+</div><!-- /.page -->
+
+<!-- LAST-UPDATED: 2026-04-13 21:02 CT -->
+
+<script>
+(function colorWorkstreams() {
+  var palette = [
+    {bg:'#E8ECF5', fg:'#2A4A7A', bd:'#C5CFE3'},
+    {bg:'#EBF2EC', fg:'#3A6B45', bd:'#B0CCAA'},
+    {bg:'#F5EBE5', fg:'#8B4A2E', bd:'#E0C8B6'},
+    {bg:'#F0EBF5', fg:'#5A3A7A', bd:'#D0C0E0'},
+    {bg:'#FDF4E0', fg:'#8B6914', bd:'#E8D090'},
+    {bg:'#E5F0EF', fg:'#2A6968', bd:'#B8D6D4'},
+    {bg:'#F5EEEA', fg:'#7A4A3A', bd:'#D8C0B0'},
+    {bg:'#EEF0E5', fg:'#5A6B2E', bd:'#C8D0A8'},
+    {bg:'#F0E8EC', fg:'#7A2E4A', bd:'#D8B0C0'},
+    {bg:'#E8EEF0', fg:'#3A5A6B', bd:'#B8C8D0'},
+    {bg:'#F3EEE5', fg:'#6B4A2E', bd:'#D8C0A8'},
+    {bg:'#EEF5EE', fg:'#3A6B5A', bd:'#B0D0C0'}
+  ];
+  var wsMap = {};
+  var idx = 0;
+  document.querySelectorAll('td.ms-ws').forEach(function(td) {
+    var name = td.textContent.trim();
+    if (!name || name === 'Workstream') return;
+    if (!wsMap[name]) { wsMap[name] = palette[idx % palette.length]; idx++; }
+    var c = wsMap[name];
+    td.innerHTML = '<span style="display:inline-block;font-size:10.5px;font-weight:600;padding:2px 8px;border-radius:3px;background:'+c.bg+';color:'+c.fg+';border:1px solid '+c.bd+';white-space:nowrap;letter-spacing:.02em;">'+name+'</span>';
+  });
+  document.querySelectorAll('td.col-ws').forEach(function(td) {
+    var name = td.textContent.trim();
+    if (!name) return;
+    var c = wsMap[name] || palette[idx++ % palette.length];
+    if (!wsMap[name]) wsMap[name] = c;
+    td.innerHTML = '<span style="display:inline-block;font-size:12px;font-weight:600;padding:2px 8px;border-radius:3px;background:'+c.bg+';color:'+c.fg+';border:1px solid '+c.bd+';letter-spacing:.01em;">'+name+'</span>';
+  });
+})();
+</script>
+
+</body>
+</html>
