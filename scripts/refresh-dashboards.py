@@ -432,6 +432,7 @@ def build_milestones(workstreams: list[Workstream], client_cfg: dict) -> list[di
                 "type": sub.type,
                 "notes": sub.notes,
                 "row_class": " ".join(row_classes),
+                "on_hold": sub._status_text == "On Hold",
             })
 
     # Sort: done items first (by date), then upcoming (by date), nulls last
