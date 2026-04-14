@@ -38,9 +38,9 @@ clients:
       - CLOSE-OUT
 
   - slug: kehe
-    display_name: "KeHE 2026\u201327 Partnership"
+    display_name: "KeHE Cares 2026\u201327 Partnership"
     monday_group_id: group_mm1t9gqj
-    kickoff_date: "2026-04-01"
+    kickoff_date: "2026-04-14"
     close_date: "2027-04-30"
     project_type: ongoing
     deliverables:
