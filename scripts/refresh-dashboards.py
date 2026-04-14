@@ -263,7 +263,7 @@ class Workstream:
     @property
     def window(self) -> str:
         """Derive a timeline window from subitem dates."""
-        dates = sorted([s.date for s in self.visible_subitems if s.date])
+        dates = sorted([s.date for s in self.all_subitems if s.date])
         if not dates:
             return ""
         first, last = dates[0], dates[-1]
