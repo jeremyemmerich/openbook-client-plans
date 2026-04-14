@@ -147,6 +147,33 @@
   .row-done .ms-type-label { opacity: .5; }
   .row-approval .ms-type-label { color: var(--approval-text); background: rgba(0,0,0,.04); }
 
+  /* FILTER BAR */
+  .filter-bar {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 12px; margin: 14px 0 10px; flex-wrap: wrap;
+  }
+  .filter-buttons { display: flex; gap: 6px; flex-wrap: wrap; }
+  .filter-btn {
+    background: #fff; border: 1px solid var(--border); color: var(--muted);
+    font-family: 'DM Sans', sans-serif; font-size: 11px; font-weight: 600;
+    padding: 5px 12px; border-radius: 4px; cursor: pointer;
+    letter-spacing: .02em; transition: all .15s;
+  }
+  .filter-btn:hover { background: #F5F4F0; color: var(--text); }
+  .filter-btn.active { background: var(--navy); color: #fff; border-color: var(--navy); }
+  .filter-ws {
+    font-family: 'DM Sans', sans-serif; font-size: 11px; font-weight: 500;
+    color: var(--text); background: #fff; border: 1px solid var(--border);
+    border-radius: 4px; padding: 5px 10px; cursor: pointer;
+    max-width: 220px;
+  }
+  .filter-ws:focus { outline: none; border-color: var(--navy); }
+  .ms-hidden { display: none; }
+  .filter-empty {
+    text-align: center; padding: 24px 13px;
+    color: var(--muted); font-style: italic;
+  }
+
   /* TABLES */
   table { width: 100%; border-collapse: collapse; margin-bottom: 8px; font-size: 13px; }
   thead tr { background: var(--navy); }
@@ -363,7 +390,19 @@
 
   
   <div class="section-heading">Key Milestones + Sign-Off Dates</div>
-  <table class="tbl-milestones">
+  <div class="filter-bar">
+    <div class="filter-buttons">
+      <button class="filter-btn active" data-filter="all">All</button>
+      <button class="filter-btn" data-filter="upcoming">Upcoming</button>
+      <button class="filter-btn" data-filter="done">Done</button>
+      <button class="filter-btn" data-filter="on-hold">On Hold</button>
+      <button class="filter-btn" data-filter="key-meeting">Key Meetings</button>
+    </div>
+    <select class="filter-ws" id="ws-filter">
+      <option value="all">All Workstreams</option>
+    </select>
+  </div>
+  <table class="tbl-milestones" id="milestone-table">
     <thead><tr>
       <th style="width:9%">Target Date</th>
       <th style="width:42%">Milestone</th>
@@ -373,7 +412,7 @@
     </tr></thead>
     <tbody>
       
-      <tr class="row-done">
+      <tr class="row-done" data-status="done" data-ws="2025 Impact Report">
         <td class="ms-date">Apr 16</td>
         <td class="ms-name">Listening Session — 2025 ideas, data needs, story, update desires<span class="ms-type-label">Client Meeting</span></td>
         <td class="ms-ws">2025 Impact Report</td>
@@ -384,7 +423,7 @@
         <td class="ms-notes"></td>
       </tr>
       
-      <tr class="row-approval">
+      <tr class="row-approval" data-status="key-meeting" data-ws="New Scope Start-Up + Alignment">
         <td class="ms-date">Apr 14</td>
         <td class="ms-name">Kickoff + Alignment and Listening Session with KCF Team<span class="ms-type-label">Client Meeting</span></td>
         <td class="ms-ws">New Scope Start-Up + Alignment</td>
@@ -395,7 +434,7 @@
         <td class="ms-notes"></td>
       </tr>
       
-      <tr class="">
+      <tr class="" data-status="upcoming" data-ws="New Scope Start-Up + Alignment">
         <td class="ms-date">Apr 14</td>
         <td class="ms-name">Send Recap + Establish Shared Status Doc<span class="ms-type-label">Email Deliverable</span></td>
         <td class="ms-ws">New Scope Start-Up + Alignment</td>
@@ -405,7 +444,7 @@
         <td class="ms-notes"></td>
       </tr>
       
-      <tr class="row-approval">
+      <tr class="row-approval" data-status="key-meeting" data-ws="2025 Impact Report">
         <td class="ms-date">May 5</td>
         <td class="ms-name">Calibration Session with Client on Theme/Story<span class="ms-type-label">Client Meeting</span></td>
         <td class="ms-ws">2025 Impact Report</td>
@@ -416,7 +455,7 @@
         <td class="ms-notes"></td>
       </tr>
       
-      <tr class="">
+      <tr class="" data-status="upcoming" data-ws="Impact Video Reskin">
         <td class="ms-date">May 5</td>
         <td class="ms-name">Send Pre-Questions: Video Reskin<span class="ms-type-label">Email Deliverable</span></td>
         <td class="ms-ws">Impact Video Reskin</td>
@@ -426,7 +465,7 @@
         <td class="ms-notes"></td>
       </tr>
       
-      <tr class="row-task">
+      <tr class="row-task" data-status="upcoming" data-ws="Owners & Donors Video">
         <td class="ms-date">May 6</td>
         <td class="ms-name">Send Pre-Questions: Owners & Donors Video Listening Session<span class="ms-type-label">Email Deliverable</span></td>
         <td class="ms-ws">Owners & Donors Video</td>
@@ -436,7 +475,7 @@
         <td class="ms-notes"></td>
       </tr>
       
-      <tr class="row-approval">
+      <tr class="row-approval" data-status="key-meeting" data-ws="Impact Video Reskin">
         <td class="ms-date">May 7</td>
         <td class="ms-name">Listening Session — Video Reskin Needs<span class="ms-type-label">Client Meeting</span></td>
         <td class="ms-ws">Impact Video Reskin</td>
@@ -447,7 +486,7 @@
         <td class="ms-notes"></td>
       </tr>
       
-      <tr class="row-approval">
+      <tr class="row-approval" data-status="key-meeting" data-ws="Brand Guidelines + Training">
         <td class="ms-date">May 8</td>
         <td class="ms-name">Present Brand Guidelines to Client<span class="ms-type-label">Client Meeting</span></td>
         <td class="ms-ws">Brand Guidelines + Training</td>
@@ -458,7 +497,7 @@
         <td class="ms-notes"></td>
       </tr>
       
-      <tr class="row-approval">
+      <tr class="row-approval" data-status="key-meeting" data-ws="Owners & Donors Video">
         <td class="ms-date">May 11</td>
         <td class="ms-name">Listening Session - Donor Story Direction<span class="ms-type-label">Client Meeting</span></td>
         <td class="ms-ws">Owners & Donors Video</td>
@@ -469,7 +508,7 @@
         <td class="ms-notes"></td>
       </tr>
       
-      <tr class="row-approval">
+      <tr class="row-approval" data-status="key-meeting" data-ws="2025 Impact Report">
         <td class="ms-date">May 12</td>
         <td class="ms-name">Present Mock-Ups + Copy to Client / Calibration Session to Receive Feedback<span class="ms-type-label">Client Meeting</span></td>
         <td class="ms-ws">2025 Impact Report</td>
@@ -480,7 +519,7 @@
         <td class="ms-notes"></td>
       </tr>
       
-      <tr class="">
+      <tr class="" data-status="upcoming" data-ws="2025 Impact Report">
         <td class="ms-date">May 15</td>
         <td class="ms-name">Approval to Build Impact Report<span class="ms-type-label">Client Work</span></td>
         <td class="ms-ws">2025 Impact Report</td>
@@ -490,7 +529,7 @@
         <td class="ms-notes"></td>
       </tr>
       
-      <tr class="row-approval">
+      <tr class="row-approval" data-status="key-meeting" data-ws="Brand Guidelines + Training">
         <td class="ms-date">May 19</td>
         <td class="ms-name">Brand Training Session with KCF Team<span class="ms-type-label">Client Meeting</span></td>
         <td class="ms-ws">Brand Guidelines + Training</td>
@@ -501,7 +540,7 @@
         <td class="ms-notes"></td>
       </tr>
       
-      <tr class="">
+      <tr class="" data-status="upcoming" data-ws="Brand Guidelines + Training">
         <td class="ms-date">May 20</td>
         <td class="ms-name">Deliver Final Assets<span class="ms-type-label">Email Deliverable</span></td>
         <td class="ms-ws">Brand Guidelines + Training</td>
@@ -511,7 +550,7 @@
         <td class="ms-notes"></td>
       </tr>
       
-      <tr class="row-approval">
+      <tr class="row-approval" data-status="key-meeting" data-ws="2025 Impact Report">
         <td class="ms-date">May 21</td>
         <td class="ms-name">Present Impact Report to Client<span class="ms-type-label">Client Meeting</span></td>
         <td class="ms-ws">2025 Impact Report</td>
@@ -522,7 +561,7 @@
         <td class="ms-notes"></td>
       </tr>
       
-      <tr class="">
+      <tr class="" data-status="upcoming" data-ws="2025 Impact Report">
         <td class="ms-date">May 26</td>
         <td class="ms-name">Calibration Session - Receive Feedback<span class="ms-type-label">Client Meeting, Client Review</span></td>
         <td class="ms-ws">2025 Impact Report</td>
@@ -532,7 +571,7 @@
         <td class="ms-notes"></td>
       </tr>
       
-      <tr class="row-approval">
+      <tr class="row-approval" data-status="key-meeting" data-ws="Impact Video Reskin">
         <td class="ms-date">May 28</td>
         <td class="ms-name">Present Reskinned Video to Client<span class="ms-type-label">Client Meeting</span></td>
         <td class="ms-ws">Impact Video Reskin</td>
@@ -543,7 +582,7 @@
         <td class="ms-notes"></td>
       </tr>
       
-      <tr class="">
+      <tr class="" data-status="upcoming" data-ws="Impact Video Reskin">
         <td class="ms-date">Jun 1</td>
         <td class="ms-name">Calibration Session - Receive Feedback<span class="ms-type-label">Client Meeting, Client Review</span></td>
         <td class="ms-ws">Impact Video Reskin</td>
@@ -553,7 +592,7 @@
         <td class="ms-notes"></td>
       </tr>
       
-      <tr class="row-approval">
+      <tr class="row-approval" data-status="key-meeting" data-ws="Owners & Donors Video">
         <td class="ms-date">Jun 3</td>
         <td class="ms-name">Present Script, Mix, Directional Boards to Client<span class="ms-type-label">Client Meeting</span></td>
         <td class="ms-ws">Owners & Donors Video</td>
@@ -564,7 +603,7 @@
         <td class="ms-notes"></td>
       </tr>
       
-      <tr class="">
+      <tr class="" data-status="upcoming" data-ws="Owners & Donors Video">
         <td class="ms-date">Jun 4</td>
         <td class="ms-name">Conduct Calibration Session - Receive Feedback<span class="ms-type-label">Client Meeting, Client Review</span></td>
         <td class="ms-ws">Owners & Donors Video</td>
@@ -574,7 +613,7 @@
         <td class="ms-notes"></td>
       </tr>
       
-      <tr class="">
+      <tr class="" data-status="upcoming" data-ws="2025 Impact Report">
         <td class="ms-date">Jun 8</td>
         <td class="ms-name">Launch Site / Impact Report<span class="ms-type-label">Client Work</span></td>
         <td class="ms-ws">2025 Impact Report</td>
@@ -584,7 +623,7 @@
         <td class="ms-notes"></td>
       </tr>
       
-      <tr class="">
+      <tr class="" data-status="upcoming" data-ws="Owners & Donors Video">
         <td class="ms-date">Jun 8</td>
         <td class="ms-name">Green Light to Move Forward - Boards / Script / Mix<span class="ms-type-label">Decision</span></td>
         <td class="ms-ws">Owners & Donors Video</td>
@@ -594,7 +633,7 @@
         <td class="ms-notes"></td>
       </tr>
       
-      <tr class="row-approval">
+      <tr class="row-approval" data-status="key-meeting" data-ws="Website 1.5 Updates">
         <td class="ms-date">Jun 29</td>
         <td class="ms-name">Listening Session - What's Working, What's Not, Messaging Priorities<span class="ms-type-label">Client Meeting</span></td>
         <td class="ms-ws">Website 1.5 Updates</td>
@@ -605,7 +644,7 @@
         <td class="ms-notes"></td>
       </tr>
       
-      <tr class="row-approval">
+      <tr class="row-approval" data-status="key-meeting" data-ws="Owners & Donors Video">
         <td class="ms-date">Jul 8</td>
         <td class="ms-name">Present Video to Client / Schedule Calibration Session<span class="ms-type-label">Client Meeting</span></td>
         <td class="ms-ws">Owners & Donors Video</td>
@@ -616,7 +655,7 @@
         <td class="ms-notes"></td>
       </tr>
       
-      <tr class="row-approval">
+      <tr class="row-approval" data-status="key-meeting" data-ws="Website 1.5 Updates">
         <td class="ms-date">Jul 8</td>
         <td class="ms-name">Present Site Update Plan to Client<span class="ms-type-label">Client Meeting</span></td>
         <td class="ms-ws">Website 1.5 Updates</td>
@@ -627,7 +666,7 @@
         <td class="ms-notes"></td>
       </tr>
       
-      <tr class="row-task">
+      <tr class="row-task" data-status="upcoming" data-ws="Owners & Donors Video">
         <td class="ms-date">Jul 10</td>
         <td class="ms-name">Conduct Calibration Session<span class="ms-type-label">Client Review</span></td>
         <td class="ms-ws">Owners & Donors Video</td>
@@ -637,7 +676,7 @@
         <td class="ms-notes"></td>
       </tr>
       
-      <tr class="row-approval">
+      <tr class="row-approval" data-status="key-meeting" data-ws="Storytelling">
         <td class="ms-date">Jul 15</td>
         <td class="ms-name">Initial listening Session - Storytelling Vision + Donor Story Direction (copy)<span class="ms-type-label">Client Meeting</span></td>
         <td class="ms-ws">Storytelling</td>
@@ -648,7 +687,7 @@
         <td class="ms-notes"></td>
       </tr>
       
-      <tr class="row-approval">
+      <tr class="row-approval" data-status="key-meeting" data-ws="Storytelling">
         <td class="ms-date">Jul 21</td>
         <td class="ms-name">Calibration Session - Storytelling Vision + Donor Story Direction<span class="ms-type-label">Client Meeting</span></td>
         <td class="ms-ws">Storytelling</td>
@@ -659,7 +698,7 @@
         <td class="ms-notes"></td>
       </tr>
       
-      <tr class="">
+      <tr class="" data-status="upcoming" data-ws="Owners & Donors Video">
         <td class="ms-date">Jul 27</td>
         <td class="ms-name">Delivery of Final Video to Client<span class="ms-type-label">Email Deliverable</span></td>
         <td class="ms-ws">Owners & Donors Video</td>
@@ -669,7 +708,7 @@
         <td class="ms-notes"></td>
       </tr>
       
-      <tr class="row-approval">
+      <tr class="row-approval" data-status="key-meeting" data-ws="Storytelling">
         <td class="ms-date">Aug 3</td>
         <td class="ms-name">Conduct Calibration Session - Present Initial Storytelling Plan<span class="ms-type-label">Client Meeting</span></td>
         <td class="ms-ws">Storytelling</td>
@@ -680,7 +719,7 @@
         <td class="ms-notes"></td>
       </tr>
       
-      <tr class="row-approval">
+      <tr class="row-approval" data-status="key-meeting" data-ws="Website 1.5 Updates">
         <td class="ms-date">Aug 5</td>
         <td class="ms-name">Present Site Revisions to Client<span class="ms-type-label">Client Meeting</span></td>
         <td class="ms-ws">Website 1.5 Updates</td>
@@ -691,7 +730,7 @@
         <td class="ms-notes"></td>
       </tr>
       
-      <tr class="">
+      <tr class="" data-status="upcoming" data-ws="Website 1.5 Updates">
         <td class="ms-date">Aug 7</td>
         <td class="ms-name">Client Approval on Site Revisions<span class="ms-type-label">Decision</span></td>
         <td class="ms-ws">Website 1.5 Updates</td>
@@ -701,7 +740,7 @@
         <td class="ms-notes"></td>
       </tr>
       
-      <tr class="">
+      <tr class="" data-status="upcoming" data-ws="Website 1.5 Updates">
         <td class="ms-date">Aug 11</td>
         <td class="ms-name">Push Changes Live<span class="ms-type-label">TOB Work</span></td>
         <td class="ms-ws">Website 1.5 Updates</td>
@@ -711,7 +750,7 @@
         <td class="ms-notes"></td>
       </tr>
       
-      <tr class="">
+      <tr class="" data-status="upcoming" data-ws="Monthly Meetings + Status Updates">
         <td class="ms-date">Monthly</td>
         <td class="ms-name">All-Team Status Meetings<span class="ms-type-label">Recurring</span></td>
         <td class="ms-ws">Monthly Meetings + Status Updates</td>
@@ -721,7 +760,7 @@
         <td class="ms-notes">Monthly cadence Apr 2026 – Apr 2027</td>
       </tr>
       
-      <tr class="">
+      <tr class="" data-status="upcoming" data-ws="Conclusion Steps">
         <td class="ms-date">–</td>
         <td class="ms-name">Send Project Close Email to Client<span class="ms-type-label">Email Deliverable</span></td>
         <td class="ms-ws">Conclusion Steps</td>
@@ -745,7 +784,7 @@
 
 </div><!-- /.page -->
 
-<!-- LAST-UPDATED: 2026-04-13 21:00 CT -->
+<!-- LAST-UPDATED: 2026-04-13 21:11 CT -->
 
 <script>
 (function colorWorkstreams() {
@@ -779,6 +818,65 @@
     if (!wsMap[name]) wsMap[name] = c;
     td.innerHTML = '<span style="display:inline-block;font-size:12px;font-weight:600;padding:2px 8px;border-radius:3px;background:'+c.bg+';color:'+c.fg+';border:1px solid '+c.bd+';letter-spacing:.01em;">'+name+'</span>';
   });
+})();
+
+/* ─── MILESTONE FILTERS ───────────────────────── */
+(function initFilters() {
+  var table = document.getElementById('milestone-table');
+  if (!table) return;
+  var rows = Array.from(table.querySelectorAll('tbody tr[data-status]'));
+  var buttons = document.querySelectorAll('.filter-btn');
+  var wsSelect = document.getElementById('ws-filter');
+
+  // Populate workstream dropdown
+  var wsSet = [];
+  rows.forEach(function(r) {
+    var ws = r.dataset.ws;
+    if (ws && wsSet.indexOf(ws) === -1) wsSet.push(ws);
+  });
+  wsSet.sort();
+  wsSet.forEach(function(ws) {
+    var opt = document.createElement('option');
+    opt.value = ws; opt.textContent = ws;
+    wsSelect.appendChild(opt);
+  });
+
+  var activeStatus = 'all';
+
+  function applyFilters() {
+    var wsVal = wsSelect.value;
+    var visible = 0;
+    rows.forEach(function(r) {
+      var matchStatus = activeStatus === 'all' || r.dataset.status === activeStatus;
+      var matchWs = wsVal === 'all' || r.dataset.ws === wsVal;
+      if (matchStatus && matchWs) {
+        r.classList.remove('ms-hidden');
+        visible++;
+      } else {
+        r.classList.add('ms-hidden');
+      }
+    });
+    // Show empty state
+    var existing = table.querySelector('.filter-empty');
+    if (existing) existing.remove();
+    if (visible === 0) {
+      var tr = document.createElement('tr');
+      tr.className = 'filter-empty';
+      tr.innerHTML = '<td colspan="5">No milestones match this filter.</td>';
+      table.querySelector('tbody').appendChild(tr);
+    }
+  }
+
+  buttons.forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      buttons.forEach(function(b) { b.classList.remove('active'); });
+      btn.classList.add('active');
+      activeStatus = btn.dataset.filter;
+      applyFilters();
+    });
+  });
+
+  wsSelect.addEventListener('change', applyFilters);
 })();
 </script>
 
