@@ -1,0 +1,28 @@
+# Open Book — Client Dashboard Configuration
+# Each entry maps to a folder at plans.teamopenbook.com/{slug}
+# Regenerated hourly on weekdays by .github/workflows/refresh-dashboards.yml
+
+clients:
+  - slug: stony-brook
+    display_name: The Stony Brook School
+    monday_group_id: group_mm0jnqbf
+    kickoff_date: "2025-11-17"
+    close_date: "2026-08-31"
+    project_type: linear
+    phases:
+      - SIGN-TO-START
+      - KNOW
+      - SHOW
+      - BUILD
+      - CLOSE-OUT
+
+  - slug: kehe
+    display_name: "KeHE 2026\u201327 Partnership"
+    monday_group_id: group_mm1t9gqj
+    kickoff_date: "2026-04-01"
+    close_date: "2027-04-30"
+    project_type: ongoing
+    deliverables:
+      - 2025 Impact Report
+      - Impact Video Reskin
+      # Add more as scoped — names must match Monday workstream names exactly

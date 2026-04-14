@@ -1,13 +1,13 @@
+<!-- AUTO-GENERATED. Edits will be overwritten. Source: _template/index.html + clients.yaml + Monday.com board 18397531209 -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CLIENT_NAME — Open Book Project Plan</title>
+<title>{{ client.display_name }} — Open Book Project Plan</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
-  /* ─── DESIGN TOKENS ──────────────────────────────────────── */
   :root {
     --navy:          #1C2E44;
     --cream:         #FAFAF8;
@@ -19,8 +19,9 @@
     --done-border:   #C8D4C0;
     --approval-bg:   #FDF7EE;
     --approval-text: #6A500A;
-    --edit-ring:     #3A7BD5;
-    --edit-bg:       #EEF3FF;
+    --active-bg:     #EEF3FF;
+    --active-text:   #2A4EA0;
+    --active-border: #C0CFFF;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   html, body { background: var(--cream); }
@@ -32,23 +33,9 @@
     -webkit-font-smoothing: antialiased;
   }
 
-  /* ─── TEAM BANNER ────────────────────────────────────────── */
-  .team-banner {
-    display: none;
-    background: var(--navy);
-    color: rgba(255,255,255,0.75);
-    font-size: 12px;
-    font-weight: 500;
-    padding: 8px 60px;
-    letter-spacing: .03em;
-  }
-  .team-banner em { color: #7FB3FF; font-style: normal; }
-  body.team-mode .team-banner { display: block; }
+  .page { max-width: 820px; margin: 0 auto; padding: 56px 40px 80px; }
 
-  /* ─── PAGE ───────────────────────────────────────────────── */
-  .page { max-width: 780px; margin: 0 auto; padding: 56px 40px 80px; }
-
-  /* ─── HEADER ─────────────────────────────────────────────── */
+  /* HEADER */
   .doc-header {
     margin-bottom: 40px;
     padding-bottom: 28px;
@@ -62,18 +49,65 @@
   .doc-title {
     font-family: 'Libre Baskerville', serif;
     font-size: 30px; font-weight: 700;
-    color: var(--navy); line-height: 1.2; margin-bottom: 6px;
+    color: var(--navy); line-height: 1.2; margin-bottom: 8px;
   }
   .doc-subtitle { font-size: 13px; color: var(--muted); font-weight: 300; }
+  .doc-dates {
+    margin-top: 10px;
+    font-size: 12px; color: var(--muted);
+    display: flex; gap: 24px; flex-wrap: wrap;
+  }
+  .doc-dates strong { color: var(--text); font-weight: 600; }
 
-  /* ─── SECTION HEADING ────────────────────────────────────── */
   .section-heading {
     font-family: 'Libre Baskerville', serif;
     font-size: 17px; font-weight: 700;
     color: var(--navy); margin: 36px 0 14px;
   }
 
-  /* ─── TABLES ─────────────────────────────────────────────── */
+  /* PHASE TRACKER */
+  .tracker {
+    display: flex;
+    align-items: stretch;
+    gap: 0;
+    margin: 14px 0 8px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    overflow: hidden;
+    background: #fff;
+  }
+  .tracker-step {
+    flex: 1 1 0;
+    padding: 14px 14px 12px;
+    min-width: 0;
+    border-right: 1px solid var(--border);
+    position: relative;
+  }
+  .tracker-step:last-child { border-right: none; }
+  .tracker-step .step-label {
+    font-size: 10.5px; font-weight: 600;
+    letter-spacing: .08em; text-transform: uppercase;
+    color: var(--muted); margin-bottom: 4px;
+  }
+  .tracker-step .step-name {
+    font-family: 'Libre Baskerville', serif;
+    font-size: 13.5px; color: var(--navy);
+    line-height: 1.25;
+  }
+  .tracker-step .step-window {
+    margin-top: 4px;
+    font-size: 11px; color: var(--muted);
+  }
+  .tracker-step.complete { background: var(--done-bg); }
+  .tracker-step.complete .step-label { color: var(--done-text); }
+  .tracker-step.complete .step-name  { color: var(--done-text); }
+  .tracker-step.active { background: var(--active-bg); }
+  .tracker-step.active .step-label { color: var(--active-text); }
+  .tracker-step.active .step-name  { color: var(--active-text); font-weight: 700; }
+  .tracker-step.upcoming .step-label { color: var(--muted); }
+  .tracker-step.upcoming .step-name  { color: var(--muted); }
+
+  /* TABLES */
   table { width: 100%; border-collapse: collapse; margin-bottom: 8px; font-size: 13px; }
   thead tr { background: var(--navy); }
   thead th {
@@ -86,531 +120,198 @@
   tbody tr:last-child { border-bottom: none; }
   tbody td { padding: 10px 13px; vertical-align: top; line-height: 1.45; }
 
-  /* Overview alternating rows */
   .tbl-overview tbody tr:nth-child(odd) { background: rgba(0,0,0,0.018); }
   .col-ws { font-weight: 600; }
   .col-window { color: var(--muted); }
+  .col-notes { color: var(--muted); font-size: 12px; }
 
-  /* Status pills */
   .pill {
     display: inline-block; font-size: 10.5px; font-weight: 600;
     letter-spacing: .04em; padding: 2px 8px; border-radius: 3px; white-space: nowrap;
   }
-  .pill-complete  { background: var(--done-bg);  color: var(--done-text);  border: 1px solid var(--done-border); }
-  .pill-active    { background: #EEF3FF; color: #2A4EA0; border: 1px solid #C0CFFF; }
-  .pill-upcoming  { background: #F5F4F0; color: #666;    border: 1px solid #DDD; }
+  .pill-complete { background: var(--done-bg);   color: var(--done-text);   border: 1px solid var(--done-border); }
+  .pill-active   { background: var(--active-bg); color: var(--active-text); border: 1px solid var(--active-border); }
+  .pill-upcoming { background: #F5F4F0; color: #666; border: 1px solid #DDD; }
 
-  /* Milestone row types */
+  /* Milestone rows */
   .row-done td      { background: var(--done-bg); color: #666; }
   .row-done .ms-name { color: #555; }
   .row-done .done-check { color: var(--done-text); font-weight: 600; font-size: 11px; }
-  .row-approval td  { background: var(--approval-bg); }
-  .row-approval .ms-date     { color: var(--approval-text); font-weight: 700; }
-  .row-approval .ms-approval { color: var(--approval-text); font-weight: 700; }
 
-  .ms-name     { font-weight: 500; }
-  .ms-date     { font-variant-numeric: tabular-nums; white-space: nowrap; font-size: 12.5px; }
-  .ms-ws       { color: var(--muted); font-size: 12px; }
-  .ms-approval { font-size: 12px; white-space: nowrap; }
-  .ms-dash     { color: #CCC; }
+  .row-approval td      { background: var(--approval-bg); }
+  .row-approval .ms-date { color: var(--approval-text); font-weight: 700; }
+  .row-approval .ms-type { color: var(--approval-text); font-weight: 600; }
 
-  /* ─── TEAM-MODE EDITING ──────────────────────────────────── */
-  .editable {
-    cursor: pointer; border-bottom: 1.5px dashed var(--edit-ring);
-    color: #2A5BBF; border-radius: 2px; display: inline-block;
-  }
-  .editable:hover { background: var(--edit-bg); }
-  .edit-wrap { display: inline-flex; align-items: center; gap: 5px; }
-  .edit-wrap input {
-    border: 1.5px solid var(--edit-ring); border-radius: 3px;
-    font-family: 'DM Sans', sans-serif; font-size: 12.5px;
-    padding: 2px 6px; color: var(--text); width: 120px;
-    outline: none; background: #fff;
-  }
-  .edit-wrap input:focus { box-shadow: 0 0 0 2px rgba(58,123,213,.25); }
-  .btn-save {
-    background: var(--navy); color: #fff; border: none;
-    border-radius: 3px; padding: 3px 9px;
-    font-size: 11px; font-family: 'DM Sans', sans-serif;
-    font-weight: 600; cursor: pointer;
-  }
-  .btn-cancel {
-    background: none; color: var(--muted); border: 1px solid var(--border);
-    border-radius: 3px; padding: 3px 7px;
-    font-size: 11px; font-family: 'DM Sans', sans-serif; cursor: pointer;
+  .row-task td      { color: var(--muted); }
+  .row-task .ms-name { font-weight: 400; }
+
+  .ms-name { font-weight: 500; }
+  .ms-date { font-variant-numeric: tabular-nums; white-space: nowrap; font-size: 12.5px; }
+  .ms-ws   { font-size: 12px; }
+  .ms-type { font-size: 11px; }
+  .ms-dash { color: #CCC; }
+  .ms-notes { color: var(--muted); font-size: 12px; font-style: italic; }
+
+  /* FROZEN / CLOSED STATE */
+  .closed-banner {
+    background: var(--done-bg);
+    border: 1px solid var(--done-border);
+    color: var(--done-text);
+    font-size: 12.5px; font-weight: 500;
+    padding: 10px 14px; border-radius: 4px;
+    margin-bottom: 20px;
   }
 
-  /* ─── ADD MILESTONE BUTTON ───────────────────────────────── */
-  .add-btn {
-    display: none; margin-top: 6px;
-    background: none; border: 1px dashed var(--border);
-    color: var(--muted); font-family: 'DM Sans', sans-serif;
-    font-size: 12px; padding: 6px 14px; border-radius: 4px;
-    cursor: pointer; width: 100%; text-align: left;
-  }
-  .add-btn:hover { background: #F0EEE8; color: var(--text); }
-  body.team-mode .add-btn { display: block; }
-
-  /* ─── ADD MILESTONE FORM ─────────────────────────────────── */
-  .add-form { display: none; }
-  .add-form.open { display: table-row; }
-  .add-form td { background: var(--edit-bg); padding: 8px 13px; }
-  .add-form input, .add-form select {
-    border: 1px solid #B0CEFF; border-radius: 3px;
-    font-family: 'DM Sans', sans-serif; font-size: 12px;
-    padding: 4px 7px; outline: none; background: #fff;
+  /* EMPTY STATES */
+  .empty-row td {
+    color: var(--muted); font-style: italic;
+    text-align: center; padding: 18px 13px;
   }
 
-  /* ─── FOOTER ─────────────────────────────────────────────── */
   .doc-footer {
     margin-top: 56px; padding-top: 18px;
     border-top: 1px solid var(--border);
     display: flex; align-items: center; justify-content: space-between;
+    flex-wrap: wrap; gap: 10px;
   }
   .footer-brand { font-family: 'Libre Baskerville', serif; font-size: 13px; color: var(--muted); }
   .footer-note  { font-size: 11px; color: var(--muted); text-align: right; }
 
-  /* ─── TOAST ──────────────────────────────────────────────── */
-  .toast {
-    position: fixed; bottom: 20px; right: 20px;
-    background: var(--navy); color: #fff;
-    font-size: 12.5px; font-weight: 500;
-    padding: 9px 16px; border-radius: 5px;
-    opacity: 0; transform: translateY(6px);
-    transition: all .2s; pointer-events: none; z-index: 999;
-  }
-  .toast.show { opacity: 1; transform: translateY(0); }
-  .toast.err  { background: #8B2020; }
-
-  /* MARK AS DONE — team mode */
-  .done-btn {
-    display: none; cursor: pointer;
-    background: none; border: 1px solid var(--done-border);
-    color: var(--done-text); font-size: 10px; font-weight: 600;
-    font-family: 'DM Sans', sans-serif; padding: 2px 7px;
-    border-radius: 3px; margin-left: 6px;
-    vertical-align: middle; white-space: nowrap;
-    opacity: 0; transition: opacity .15s;
-  }
-  body.team-mode tr[data-id]:not(.row-done) .done-btn { display: inline-block; }
-  body.team-mode tr[data-id]:not(.row-done):hover .done-btn { opacity: 1; }
-
-  /* DRAG SORT — team mode */
-  .drag-handle {
-    display: none; cursor: grab; color: #CCC;
-    font-size: 14px; padding: 0 6px 0 0;
-    user-select: none; line-height: 1;
-  }
-  .drag-handle:hover { color: #999; }
-  body.team-mode tr[data-id] .drag-handle { display: inline; }
-  tr.dragging { opacity: .4; }
-  tr.drag-over td { border-top: 2px solid var(--edit-ring) !important; }
-
   @media print {
-    .team-banner, .add-btn, .add-form, .editable, .drag-handle { display: none !important; }
     .page { padding: 20px; }
+    .tracker { page-break-inside: avoid; }
   }
-  @media (max-width: 600px) {
+  @media (max-width: 640px) {
     .page { padding: 24px 20px 60px; }
-    .col-window, .ms-ws { display: none; }
+    .col-window, .col-notes, .ms-ws { display: none; }
+    .tracker { flex-wrap: wrap; }
+    .tracker-step {
+      flex: 1 0 50%;
+      border-right: none;
+      border-bottom: 1px solid var(--border);
+    }
   }
 </style>
 </head>
 <body>
 
-<div class="team-banner">
-  ✏ Team mode &nbsp;·&nbsp; <em>Click any date to edit</em> &nbsp;·&nbsp; Changes sync to Monday.com &nbsp;·&nbsp; <em>+ Add milestone</em> button appears below the table
-</div>
-
 <div class="page">
 
-  <!-- ═══════════════════════════════════════════════════════
-       HEADER
-       Update: CLIENT_NAME, updated date
-  ════════════════════════════════════════════════════════ -->
   <header class="doc-header">
     <div class="doc-eyebrow">Open Book — Project Plan</div>
-    <div class="doc-title">CLIENT_NAME</div>
-    <div class="doc-subtitle">Updated MONTH DD, YYYY</div>
+    <div class="doc-title">{{ client.display_name }}</div>
+    {% if client.subtitle %}<div class="doc-subtitle">{{ client.subtitle }}</div>{% endif %}
+    <div class="doc-dates">
+      {% if client.kickoff_date %}<div><strong>Kickoff:</strong> {{ client.kickoff_date_display }}</div>{% endif %}
+      {% if client.close_date %}<div><strong>Target close:</strong> {{ client.close_date_display }}</div>{% endif %}
+    </div>
   </header>
 
-  <!-- ═══════════════════════════════════════════════════════
-       PROJECT OVERVIEW TABLE
-       Add/remove rows as needed for this client's workstreams.
-       Status classes: pill-complete | pill-active | pill-upcoming
-  ════════════════════════════════════════════════════════ -->
+  {% if client.is_closed %}
+  <div class="closed-banner">
+    ✓ Project closed {{ client.close_date_display }}. This dashboard is a frozen final snapshot.
+  </div>
+  {% endif %}
+
+  {# ── PHASE / DELIVERABLE TRACKER ───────────────────────────── #}
+  {% if tracker_steps %}
+  <div class="section-heading">
+    {% if client.project_type == 'linear' %}Phase Progress{% else %}Key Deliverables{% endif %}
+  </div>
+  <div class="tracker">
+    {% for step in tracker_steps %}
+    <div class="tracker-step {{ step.state }}">
+      <div class="step-label">
+        {% if step.state == 'complete' %}✓ Complete
+        {% elif step.state == 'active' %}In Progress
+        {% else %}Upcoming{% endif %}
+      </div>
+      <div class="step-name">{{ step.name | title }}</div>
+      {% if step.window %}<div class="step-window">{{ step.window }}</div>{% endif %}
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  {# ── PROJECT OVERVIEW ──────────────────────────────────────── #}
   <div class="section-heading">Project Overview</div>
   <table class="tbl-overview">
     <thead><tr>
-      <th style="width:52%">Workstream</th>
-      <th style="width:20%">Status</th>
-      <th style="width:28%" class="col-window">Target Window</th>
+      <th style="width:38%">Workstream</th>
+      <th style="width:16%">Status</th>
+      <th style="width:20%" class="col-window">Timeline</th>
+      <th style="width:26%" class="col-notes">Notes</th>
     </tr></thead>
     <tbody>
-      <!-- EXAMPLE ROWS — replace with this client's workstreams -->
-      <tr><td class="col-ws">Know You Deeply</td>     <td><span class="pill pill-upcoming">Upcoming</span></td><td class="col-window">Month – Month</td></tr>
-      <tr><td class="col-ws">Show Ways Forward</td>   <td><span class="pill pill-upcoming">Upcoming</span></td><td class="col-window">Month – Month</td></tr>
-      <tr><td class="col-ws">WORKSTREAM_3</td>        <td><span class="pill pill-upcoming">Upcoming</span></td><td class="col-window">Month – Month</td></tr>
-      <tr><td class="col-ws">Project Close-Out</td>   <td><span class="pill pill-upcoming">Upcoming</span></td><td class="col-window">Month – Month</td></tr>
+      {% for ws in workstreams %}
+      <tr>
+        <td class="col-ws">{{ ws.name }}</td>
+        <td><span class="pill pill-{{ ws.status }}">{{ ws.status_label }}</span></td>
+        <td class="col-window">{{ ws.window or '–' }}</td>
+        <td class="col-notes">{{ ws.notes or '' }}</td>
+      </tr>
+      {% else %}
+      <tr class="empty-row"><td colspan="4">No workstreams visible yet.</td></tr>
+      {% endfor %}
     </tbody>
   </table>
 
-  <!-- ═══════════════════════════════════════════════════════
-       KEY MILESTONES TABLE
-       Row types:
-         row-done     = completed milestone (gray background)
-         row-approval = key approval/meeting (amber background)
-         (no class)   = standard upcoming milestone
-
-       data-id = Monday.com subitem ID (enables date sync)
-                 Use "null" if no Monday ID available yet
-  ════════════════════════════════════════════════════════ -->
+  {# ── KEY MILESTONES ────────────────────────────────────────── #}
   <div class="section-heading">Key Milestones + Sign-Off Dates</div>
-
-  <table class="tbl-milestones" id="ms-table">
+  <table class="tbl-milestones">
     <thead><tr>
       <th style="width:110px">Target Date</th>
       <th>Milestone</th>
-      <th style="width:160px" class="ms-ws">Workstream</th>
-      <th style="width:75px">Status</th>
-      <th style="width:120px">Approval Needed By</th>
+      <th style="width:140px" class="ms-ws">Workstream</th>
+      <th style="width:110px">Status</th>
+      <th style="width:180px">Notes</th>
     </tr></thead>
-    <tbody id="ms-body">
-
-      <!-- ── COMPLETED MILESTONES ──────────────────────── -->
-      <!-- Copy this pattern for each completed milestone   -->
-      <tr class="row-done">
-        <td class="ms-date">Mon DD</td>
-        <td class="ms-name">MILESTONE_NAME</td>
-        <td class="ms-ws">WORKSTREAM</td>
-        <td><span class="done-check">✓ Done</span></td>
-        <td class="ms-dash">–</td>
-      </tr>
-
-      <!-- ── APPROVAL / KEY MEETING MILESTONES ────────── -->
-      <!-- Use row-approval class + data-id for Monday sync -->
-      <tr class="row-approval" data-id="MONDAY_SUBITEM_ID">
-        <td class="ms-date"><span class="date-display">Mon DD</span></td>
-        <td class="ms-name">MILESTONE_NAME</td>
-        <td class="ms-ws">WORKSTREAM</td>
-        <td style="font-size:11px;font-weight:600;color:var(--approval-text)">Approval</td>
-        <td class="ms-approval">Mon DD</td>
-      </tr>
-
-      <!-- ── STANDARD UPCOMING MILESTONES ─────────────── -->
-      <tr data-id="MONDAY_SUBITEM_ID">
-        <td class="ms-date"><span class="date-display">Mon DD</span></td>
-        <td class="ms-name">MILESTONE_NAME</td>
-        <td class="ms-ws">WORKSTREAM</td>
-        <td style="font-size:11px;color:var(--muted)">Upcoming</td>
-        <td class="ms-dash">–</td>
-      </tr>
-
-      <!-- ── ADD ROW FORM (leave at bottom, team mode only) -->
-      <tr class="add-form" id="add-form">
-        <td><input type="text" id="f-date" placeholder="e.g. Apr 14" style="width:100px"></td>
-        <td><input type="text" id="f-name" placeholder="Milestone name" style="width:98%"></td>
-        <td><input type="text" id="f-ws"   placeholder="Workstream"    style="width:98%"></td>
-        <td>
-          <select id="f-type">
-            <option value="upcoming">Upcoming</option>
-            <option value="approval">Approval</option>
-          </select>
+    <tbody>
+      {% for item in milestones %}
+      <tr class="{{ item.row_class }}">
+        <td class="ms-date">{{ item.date_display }}</td>
+        <td class="ms-name">{{ item.name }}</td>
+        <td class="ms-ws">{{ item.workstream }}</td>
+        <td class="ms-type">
+          {% if item.done %}<span class="done-check">✓ Done</span>
+          {% elif item.type %}{{ item.type }}
+          {% else %}<span style="color:var(--muted)">Upcoming</span>{% endif %}
         </td>
-        <td>
-          <span style="display:flex;gap:4px">
-            <button class="btn-save"   onclick="addRow()">Add</button>
-            <button class="btn-cancel" onclick="closeForm()">✕</button>
-          </span>
-        </td>
+        <td class="ms-notes">{{ item.notes or '' }}</td>
       </tr>
-
+      {% else %}
+      <tr class="empty-row"><td colspan="5">No milestones visible yet.</td></tr>
+      {% endfor %}
     </tbody>
   </table>
 
-  <button class="add-btn" onclick="openForm()">+ Add milestone</button>
-
-  <!-- ═══════════════════════════════════════════════════════
-       PROJECT CLOSE TABLE
-       Update dates and client name.
-  ════════════════════════════════════════════════════════ -->
+  {# ── PROJECT CLOSE ─────────────────────────────────────────── #}
+  {% if client.close_date %}
   <div class="section-heading">Project Close-Out</div>
   <table>
     <thead><tr>
       <th style="width:140px">Target Date</th>
       <th>Milestone</th>
-      <th style="width:200px">CLIENT_NAME Approval By</th>
     </tr></thead>
     <tbody>
-      <tr><td class="ms-date">Mon DD, YYYY</td><td class="ms-name">Project Close — All Deliverables Complete</td><td class="ms-dash">–</td></tr>
-      <tr><td class="ms-date">Mon DD, YYYY</td><td class="ms-name">90-Day Check-In Period Start</td><td class="ms-dash">–</td></tr>
-      <tr><td class="ms-date">Mon DD, YYYY</td><td class="ms-name">90-Day Check-In Period End</td><td class="ms-dash">–</td></tr>
+      <tr><td class="ms-date">{{ client.close_date_display }}</td><td class="ms-name">Project Close — All Deliverables Complete</td></tr>
+      <tr><td class="ms-date">{{ client.close_date_display }}</td><td class="ms-name">90-Day Check-In Period Start</td></tr>
+      <tr><td class="ms-date">{{ client.check_in_end_display }}</td><td class="ms-name">90-Day Check-In Period End</td></tr>
     </tbody>
   </table>
+  {% endif %}
 
   <footer class="doc-footer">
     <div class="footer-brand">Open Book</div>
     <div class="footer-note">
       teamopenbook.com · Minneapolis, MN<br>
-      <span id="footer-note">For questions, contact your Open Book project lead.</span>
+      For questions, contact your Open Book project lead.
     </div>
   </footer>
 
 </div><!-- /.page -->
 
-<div class="toast" id="toast"></div>
+<!-- LAST-UPDATED: {{ generated_at }} -->
 
-<script>
-// ═══════════════════════════════════════════════════════════
-// CONFIG — update these for each client
-// ═══════════════════════════════════════════════════════════
-const TEAM_KEY  = 'ob-team-2026';           // shared team password
-const MON_TOKEN = 'YOUR_MONDAY_API_KEY';    // paste Monday API key at deploy
-const BOARD_ID  = 18397531209;              // Monday Active Projects board ID
-const MON_COL   = 'timerange_mm00qh4t';    // timeline column ID
-
-// ═══════════════════════════════════════════════════════════
-// INIT
-// ═══════════════════════════════════════════════════════════
-const isTeam = location.href.indexOf('key=' + TEAM_KEY) !== -1;
-
-if (isTeam) {
-  document.body.classList.add('team-mode');
-  document.getElementById('footer-note').textContent =
-    'Team mode — date edits sync to Monday.com';
-  activateDates();
-  activateDragSort();
-}
-
-// ═══════════════════════════════════════════════════════════
-// DRAG TO REORDER (team mode)
-// ═══════════════════════════════════════════════════════════
-function activateDragSort() {
-  const tbody = document.getElementById('ms-body');
-  let dragged = null;
-
-  tbody.querySelectorAll('tr[data-id]').forEach(row => {
-    if (row.id === 'add-form') return;
-    if (row.querySelector('.drag-handle')) return; // already init'd
-    const firstTd = row.querySelector('td');
-    if (!firstTd) return;
-
-    const handle = document.createElement('span');
-    handle.className = 'drag-handle';
-    handle.textContent = '⠿';
-    handle.title = 'Drag to reorder';
-    firstTd.prepend(handle);
-    row.setAttribute('draggable', 'true');
-
-    row.addEventListener('dragstart', e => {
-      dragged = row;
-      setTimeout(() => row.classList.add('dragging'), 0);
-      e.dataTransfer.effectAllowed = 'move';
-    });
-    row.addEventListener('dragend', () => {
-      row.classList.remove('dragging');
-      tbody.querySelectorAll('tr').forEach(r => r.classList.remove('drag-over'));
-      dragged = null;
-    });
-    row.addEventListener('dragover', e => {
-      e.preventDefault();
-      if (row !== dragged) {
-        tbody.querySelectorAll('tr').forEach(r => r.classList.remove('drag-over'));
-        row.classList.add('drag-over');
-      }
-    });
-    row.addEventListener('drop', e => {
-      e.preventDefault();
-      if (dragged && dragged !== row) {
-        const allRows = Array.from(tbody.querySelectorAll('tr[data-id]:not(#add-form)'));
-        const dragIdx = allRows.indexOf(dragged);
-        const dropIdx = allRows.indexOf(row);
-        if (dragIdx < dropIdx) row.after(dragged);
-        else row.before(dragged);
-        row.classList.remove('drag-over');
-        toast('Row moved ✓');
-      }
-    });
-  });
-  tbody.addEventListener('dragover', e => e.preventDefault());
-}
-
-// ═══════════════════════════════════════════════════════════
-// MAKE DATES EDITABLE + MARK AS DONE
-// ═══════════════════════════════════════════════════════════
-function activateDates() {
-  document.querySelectorAll('tr[data-id]').forEach(row => {
-    if (row.id === 'add-form') return;
-    if (row.classList.contains('row-done')) return;
-
-    // Make date editable
-    const dateEl = row.querySelector('.date-display');
-    if (dateEl) {
-      dateEl.classList.add('editable');
-      dateEl.title = 'Click to edit';
-      dateEl.addEventListener('click', () => startEdit(dateEl));
-    }
-
-    // Add Mark as Done button
-    if (!row.querySelector('.done-btn')) {
-      const nameCell = row.cells[1];
-      if (nameCell) {
-        const btn = document.createElement('button');
-        btn.className = 'done-btn';
-        btn.textContent = '✓ Mark done';
-        btn.addEventListener('click', e => { e.stopPropagation(); markAsDone(row); });
-        nameCell.appendChild(btn);
-      }
-    }
-  });
-}
-
-function markAsDone(row) {
-  row.classList.remove('row-approval');
-  row.classList.add('row-done');
-  row.removeAttribute('draggable');
-
-  const dateEl = row.querySelector('.date-display, .editable');
-  const dateText = dateEl ? dateEl.textContent : '–';
-
-  row.cells[0].innerHTML = `<span class="ms-date">${dateText}</span>`;
-  if (row.cells[3]) row.cells[3].innerHTML = `<span class="done-check">✓ Done</span>`;
-  if (row.cells[4]) { row.cells[4].innerHTML = '–'; row.cells[4].className = 'ms-dash'; }
-
-  row.cells[1]?.querySelector('.done-btn')?.remove();
-  row.cells[1]?.querySelector('.drag-handle')?.remove();
-  row.cells[0]?.querySelector('.drag-handle')?.remove();
-
-  toast('Milestone marked as done ✓');
-}
-
-
-
-function startEdit(el) {
-  if (el.closest('tr').querySelector('.edit-wrap')) return;
-  const original = el.textContent;
-  const wrap = document.createElement('span');
-  wrap.className = 'edit-wrap';
-  wrap.innerHTML = `
-    <input type="text" value="${original}">
-    <button class="btn-save">Save</button>
-    <button class="btn-cancel">✕</button>
-  `;
-  el.replaceWith(wrap);
-  const inp = wrap.querySelector('input');
-  inp.focus(); inp.select();
-  wrap.querySelector('.btn-save').onclick   = () => commitEdit(wrap, original);
-  wrap.querySelector('.btn-cancel').onclick = () => cancelEdit(wrap, original);
-  inp.addEventListener('keydown', e => {
-    if (e.key === 'Enter')  commitEdit(wrap, original);
-    if (e.key === 'Escape') cancelEdit(wrap, original);
-  });
-}
-
-function cancelEdit(wrap, original) {
-  const span = makeEditable(original);
-  wrap.replaceWith(span);
-}
-
-async function commitEdit(wrap, original) {
-  const inp    = wrap.querySelector('input');
-  const newVal = inp.value.trim();
-  if (!newVal || newVal === original) { cancelEdit(wrap, original); return; }
-
-  const row      = wrap.closest('tr');
-  const subitemId = row.dataset.id;
-
-  if (subitemId && subitemId !== 'null' &&
-      MON_TOKEN !== 'YOUR_MONDAY_API_KEY') {
-    try   { await syncMonday(subitemId, newVal); toast('Updated in Monday ✓'); }
-    catch { toast('Saved locally — Monday sync failed', true); }
-  } else {
-    toast('Date updated ✓');
-  }
-
-  wrap.replaceWith(makeEditable(newVal));
-}
-
-function makeEditable(text) {
-  const span = document.createElement('span');
-  span.className = 'date-display editable';
-  span.title     = 'Click to edit';
-  span.textContent = text;
-  span.addEventListener('click', () => startEdit(span));
-  return span;
-}
-
-// ═══════════════════════════════════════════════════════════
-// MONDAY SYNC
-// ═══════════════════════════════════════════════════════════
-async function syncMonday(subitemId, dateStr) {
-  const mon = {
-    Jan:'01', Feb:'02', Mar:'03', Apr:'04', May:'05', Jun:'06',
-    Jul:'07', Aug:'08', Sep:'09', Oct:'10', Nov:'11', Dec:'12'
-  };
-  const m = dateStr.match(/([A-Za-z]{3})\w*\s+(\d+)/);
-  if (!m) throw new Error('unparseable date');
-  const iso = `2026-${mon[m[1]]}-${m[2].padStart(2,'0')}`;
-  const val = JSON.stringify({ from: iso, to: iso });
-  const q   = `mutation{change_column_value(board_id:${BOARD_ID},item_id:${subitemId},column_id:"${MON_COL}",value:${JSON.stringify(val)}){id}}`;
-  const r   = await fetch('https://api.monday.com/v2', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': MON_TOKEN,
-      'API-Version': '2024-01'
-    },
-    body: JSON.stringify({ query: q })
-  });
-  const d = await r.json();
-  if (d.errors) throw new Error(d.errors[0].message);
-}
-
-// ═══════════════════════════════════════════════════════════
-// ADD MILESTONE
-// ═══════════════════════════════════════════════════════════
-function openForm()  { document.getElementById('add-form').classList.add('open'); document.getElementById('f-name').focus(); }
-function closeForm() {
-  document.getElementById('add-form').classList.remove('open');
-  ['f-date','f-name','f-ws'].forEach(id => document.getElementById(id).value = '');
-}
-
-function addRow() {
-  const date = document.getElementById('f-date').value.trim();
-  const name = document.getElementById('f-name').value.trim();
-  const ws   = document.getElementById('f-ws').value.trim();
-  const type = document.getElementById('f-type').value;
-  if (!date || !name) { toast('Date and milestone name required', true); return; }
-
-  const isApproval = type === 'approval';
-  const tr = document.createElement('tr');
-  if (isApproval) tr.classList.add('row-approval');
-  tr.dataset.id = 'null';
-  tr.innerHTML = `
-    <td class="ms-date">${makeEditable(date).outerHTML}</td>
-    <td class="ms-name">${name}</td>
-    <td class="ms-ws">${ws}</td>
-    <td style="font-size:11px;${isApproval ? 'font-weight:600;color:var(--approval-text)' : 'color:var(--muted)'}">
-      ${isApproval ? 'Approval' : 'Upcoming'}
-    </td>
-    <td class="ms-dash">–</td>
-  `;
-  const form = document.getElementById('add-form');
-  form.parentNode.insertBefore(tr, form);
-  tr.querySelector('.date-display').addEventListener('click', function() { startEdit(this); });
-  closeForm();
-  toast('Milestone added ✓');
-}
-
-// ═══════════════════════════════════════════════════════════
-// TOAST
-// ═══════════════════════════════════════════════════════════
-function toast(msg, isErr) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.className   = 'toast show' + (isErr ? ' err' : '');
-  setTimeout(() => t.className = 'toast', 2600);
-}
-</script>
 </body>
 </html>
