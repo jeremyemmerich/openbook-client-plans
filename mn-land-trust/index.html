@@ -393,11 +393,11 @@
   <div class="section-heading">Key Milestones + Sign-Off Dates</div>
   <div class="filter-bar">
     <div class="filter-buttons">
-      <button class="filter-btn active" data-filter="all">All</button>
-      <button class="filter-btn" data-filter="upcoming">Upcoming</button>
+      <button class="filter-btn active" data-filter="upcoming">Upcoming</button>
       <button class="filter-btn" data-filter="done">Done</button>
       <button class="filter-btn" data-filter="on-hold">On Hold</button>
       <button class="filter-btn" data-filter="key-meeting">Key Meetings</button>
+      <button class="filter-btn" data-filter="all">All</button>
     </div>
     <select class="filter-ws" id="ws-filter">
       <option value="all">All Workstreams</option>
@@ -708,7 +708,7 @@
       
       <tr class="row-task" data-status="upcoming" data-ws="Web: Launch and Post-Launch">
         <td class="ms-date">Jul 31</td>
-        <td class="ms-name">Client Launch Date Confirmation<span class="ms-type-label">Decision</span></td>
+        <td class="ms-name">MLT Launch Date Confirmation<span class="ms-type-label">Decision</span></td>
         <td class="ms-ws">Web: Launch and Post-Launch</td>
         <td class="ms-type">
           <span style="color:var(--muted)">Upcoming</span>
@@ -848,7 +848,7 @@
     wsSelect.appendChild(opt);
   });
 
-  var activeStatuses = new Set(); // empty = show all
+  var activeStatuses = new Set(['upcoming']); // default: show Upcoming only
 
   function applyFilters() {
     var wsVal = wsSelect.value;
@@ -907,6 +907,9 @@
   });
 
   wsSelect.addEventListener('change', applyFilters);
+
+  // Apply default filter (Upcoming) on load
+  applyFilters();
 })();
 </script>
 
