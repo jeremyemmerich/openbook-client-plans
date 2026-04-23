@@ -174,13 +174,51 @@
   }
   .filter-btn:hover { background: #F5F4F0; color: var(--text); }
   .filter-btn.active { background: var(--navy); color: #fff; border-color: var(--navy); }
-  .filter-ws {
-    font-family: 'DM Sans', sans-serif; font-size: 11px; font-weight: 500;
-    color: var(--text); background: #fff; border: 1px solid var(--border);
-    border-radius: 4px; padding: 5px 10px; cursor: pointer;
-    max-width: 220px;
+  .filter-right { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+  .ws-toggle {
+    background: #fff; border: 1px solid var(--border); color: var(--muted);
+    font-family: 'DM Sans', sans-serif; font-size: 11px; font-weight: 600;
+    padding: 5px 12px; border-radius: 4px; cursor: pointer;
+    letter-spacing: .02em; transition: all .15s;
+    display: inline-flex; align-items: center; gap: 6px;
   }
-  .filter-ws:focus { outline: none; border-color: var(--navy); }
+  .ws-toggle:hover { background: #F5F4F0; color: var(--text); }
+  .ws-toggle.has-active { background: var(--navy); color: #fff; border-color: var(--navy); }
+  .ws-toggle .caret { font-size: 9px; opacity: .7; }
+  .ws-toggle .count {
+    background: rgba(255,255,255,0.25); padding: 1px 6px; border-radius: 8px;
+    font-size: 10px; font-weight: 700;
+  }
+  .copy-link {
+    background: #fff; border: 1px solid var(--border); color: var(--muted);
+    font-family: 'DM Sans', sans-serif; font-size: 11px; font-weight: 600;
+    padding: 5px 12px; border-radius: 4px; cursor: pointer;
+    letter-spacing: .02em; transition: all .15s;
+  }
+  .copy-link:hover { background: #F5F4F0; color: var(--text); }
+  .copy-link.copied { background: #E8F5E9; color: #2E7D32; border-color: #A5D6A7; }
+
+  .ws-panel {
+    display: none; margin: 0 0 10px; padding: 10px 12px;
+    background: #FAFAF7; border: 1px solid var(--border); border-radius: 4px;
+  }
+  .ws-panel.open { display: block; }
+  .ws-panel-inner { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+  .ws-chip {
+    background: #fff; border: 1px solid var(--border); color: var(--muted);
+    font-family: 'DM Sans', sans-serif; font-size: 11px; font-weight: 600;
+    padding: 4px 10px; border-radius: 3px; cursor: pointer;
+    letter-spacing: .01em; transition: all .15s;
+  }
+  .ws-chip:hover { background: #F5F4F0; color: var(--text); }
+  .ws-chip.active { background: var(--navy); color: #fff; border-color: var(--navy); }
+  .ws-clear {
+    font-size: 11px; color: var(--muted); cursor: pointer;
+    background: none; border: none; text-decoration: underline;
+    font-family: 'DM Sans', sans-serif; padding: 4px 6px;
+  }
+  .ws-clear:hover { color: var(--text); }
+
   .ms-hidden { display: none; }
   .filter-empty {
     text-align: center; padding: 24px 13px;
@@ -411,9 +449,19 @@
       <button class="filter-btn" data-filter="key-meeting">Key Meetings</button>
       <button class="filter-btn" data-filter="all">All</button>
     </div>
-    <select class="filter-ws" id="ws-filter">
-      <option value="all">All Workstreams</option>
-    </select>
+    <div class="filter-right">
+      <button class="ws-toggle" id="ws-toggle" type="button">
+        <span>Workstreams</span>
+        <span class="count" id="ws-count" style="display:none">0</span>
+        <span class="caret">▾</span>
+      </button>
+      <button class="copy-link" id="copy-link" type="button">🔗 Copy link</button>
+    </div>
+  </div>
+  <div class="ws-panel" id="ws-panel">
+    <div class="ws-panel-inner" id="ws-panel-inner">
+      <!-- chips injected by JS -->
+    </div>
   </div>
   <table class="tbl-milestones" id="milestone-table">
     <thead><tr>
@@ -824,30 +872,104 @@
   var table = document.getElementById('milestone-table');
   if (!table) return;
   var rows = Array.from(table.querySelectorAll('tbody tr[data-status]'));
-  var buttons = document.querySelectorAll('.filter-btn');
-  var wsSelect = document.getElementById('ws-filter');
+  var statusButtons = document.querySelectorAll('.filter-btn');
+  var wsToggle = document.getElementById('ws-toggle');
+  var wsCount = document.getElementById('ws-count');
+  var wsPanel = document.getElementById('ws-panel');
+  var wsPanelInner = document.getElementById('ws-panel-inner');
+  var copyBtn = document.getElementById('copy-link');
+  var allBtn = document.querySelector('.filter-btn[data-filter="all"]');
 
-  // Populate workstream dropdown
+  // Collect workstream names
   var wsSet = [];
   rows.forEach(function(r) {
     var ws = r.dataset.ws;
     if (ws && wsSet.indexOf(ws) === -1) wsSet.push(ws);
   });
   wsSet.sort();
-  wsSet.forEach(function(ws) {
-    var opt = document.createElement('option');
-    opt.value = ws; opt.textContent = ws;
-    wsSelect.appendChild(opt);
-  });
 
-  var activeStatuses = new Set(['upcoming']); // default: show Upcoming only
+  // Build chips + a "Clear" link
+  wsSet.forEach(function(ws) {
+    var chip = document.createElement('button');
+    chip.type = 'button';
+    chip.className = 'ws-chip';
+    chip.dataset.ws = ws;
+    chip.textContent = ws;
+    chip.addEventListener('click', function() {
+      if (activeWs.has(ws)) {
+        activeWs.delete(ws);
+        chip.classList.remove('active');
+      } else {
+        activeWs.add(ws);
+        chip.classList.add('active');
+      }
+      updateWsToggle();
+      applyFilters();
+      writeUrl();
+    });
+    wsPanelInner.appendChild(chip);
+  });
+  var clearBtn = document.createElement('button');
+  clearBtn.type = 'button';
+  clearBtn.className = 'ws-clear';
+  clearBtn.textContent = 'Clear';
+  clearBtn.addEventListener('click', function() {
+    activeWs.clear();
+    wsPanelInner.querySelectorAll('.ws-chip.active').forEach(function(c) { c.classList.remove('active'); });
+    updateWsToggle();
+    applyFilters();
+    writeUrl();
+  });
+  wsPanelInner.appendChild(clearBtn);
+
+  // Auto-open the panel if there are few workstreams (inline feel)
+  var INLINE_THRESHOLD = 5;
+  if (wsSet.length > 0 && wsSet.length <= INLINE_THRESHOLD) {
+    wsPanel.classList.add('open');
+  }
+
+  // State
+  var activeStatuses = new Set();
+  var activeWs = new Set();
+
+  // Read URL params
+  function readUrl() {
+    var params = new URLSearchParams(window.location.search);
+    var statusParam = params.get('status');
+    var wsParam = params.get('ws');
+    if (statusParam !== null) {
+      statusParam.split(',').map(function(s) { return s.trim(); }).filter(Boolean).forEach(function(s) {
+        if (s !== 'all') activeStatuses.add(s);
+      });
+    } else {
+      activeStatuses.add('upcoming'); // default
+    }
+    if (wsParam !== null) {
+      wsParam.split(',').map(function(s) { return decodeURIComponent(s.trim()); }).filter(Boolean).forEach(function(w) {
+        if (wsSet.indexOf(w) !== -1) activeWs.add(w);
+      });
+    }
+  }
+
+  // Write URL params (replaceState — no history spam)
+  function writeUrl() {
+    var params = new URLSearchParams();
+    if (activeStatuses.size > 0) {
+      params.set('status', Array.from(activeStatuses).join(','));
+    }
+    if (activeWs.size > 0) {
+      params.set('ws', Array.from(activeWs).map(encodeURIComponent).join(','));
+    }
+    var qs = params.toString();
+    var url = window.location.pathname + (qs ? '?' + qs : '') + window.location.hash;
+    window.history.replaceState(null, '', url);
+  }
 
   function applyFilters() {
-    var wsVal = wsSelect.value;
     var visible = 0;
     rows.forEach(function(r) {
       var matchStatus = activeStatuses.size === 0 || activeStatuses.has(r.dataset.status);
-      var matchWs = wsVal === 'all' || r.dataset.ws === wsVal;
+      var matchWs = activeWs.size === 0 || activeWs.has(r.dataset.ws);
       if (matchStatus && matchWs) {
         r.classList.remove('ms-hidden');
         visible++;
@@ -855,7 +977,6 @@
         r.classList.add('ms-hidden');
       }
     });
-    // Show empty state
     var existing = table.querySelector('.filter-empty');
     if (existing) existing.remove();
     if (visible === 0) {
@@ -866,8 +987,6 @@
     }
   }
 
-  var allBtn = document.querySelector('.filter-btn[data-filter="all"]');
-
   function updateAllBtn() {
     if (activeStatuses.size === 0) {
       allBtn.classList.add('active');
@@ -876,15 +995,41 @@
     }
   }
 
-  buttons.forEach(function(btn) {
+  function updateWsToggle() {
+    if (activeWs.size > 0) {
+      wsToggle.classList.add('has-active');
+      wsCount.style.display = 'inline-block';
+      wsCount.textContent = activeWs.size;
+    } else {
+      wsToggle.classList.remove('has-active');
+      wsCount.style.display = 'none';
+    }
+  }
+
+  // Sync initial UI from state (after readUrl)
+  function syncUi() {
+    statusButtons.forEach(function(b) {
+      var f = b.dataset.filter;
+      if (f === 'all') return;
+      if (activeStatuses.has(f)) b.classList.add('active');
+      else b.classList.remove('active');
+    });
+    wsPanelInner.querySelectorAll('.ws-chip').forEach(function(c) {
+      if (activeWs.has(c.dataset.ws)) c.classList.add('active');
+      else c.classList.remove('active');
+    });
+    updateAllBtn();
+    updateWsToggle();
+  }
+
+  // Status button clicks
+  statusButtons.forEach(function(btn) {
     btn.addEventListener('click', function() {
       var f = btn.dataset.filter;
       if (f === 'all') {
-        // Clear all selections
         activeStatuses.clear();
-        buttons.forEach(function(b) { b.classList.remove('active'); });
+        statusButtons.forEach(function(b) { b.classList.remove('active'); });
       } else {
-        // Toggle this filter
         if (activeStatuses.has(f)) {
           activeStatuses.delete(f);
           btn.classList.remove('active');
@@ -895,12 +1040,47 @@
       }
       updateAllBtn();
       applyFilters();
+      writeUrl();
     });
   });
 
-  wsSelect.addEventListener('change', applyFilters);
+  // Workstream panel toggle
+  wsToggle.addEventListener('click', function() {
+    wsPanel.classList.toggle('open');
+  });
 
-  // Apply default filter (Upcoming) on load
+  // Copy link
+  copyBtn.addEventListener('click', function() {
+    var url = window.location.href;
+    var done = function() {
+      copyBtn.classList.add('copied');
+      copyBtn.textContent = '✓ Copied!';
+      setTimeout(function() {
+        copyBtn.classList.remove('copied');
+        copyBtn.textContent = '🔗 Copy link';
+      }, 1800);
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(url).then(done, function() {
+        // fallback
+        var ta = document.createElement('textarea');
+        ta.value = url; document.body.appendChild(ta); ta.select();
+        try { document.execCommand('copy'); } catch (e) {}
+        document.body.removeChild(ta);
+        done();
+      });
+    } else {
+      var ta = document.createElement('textarea');
+      ta.value = url; document.body.appendChild(ta); ta.select();
+      try { document.execCommand('copy'); } catch (e) {}
+      document.body.removeChild(ta);
+      done();
+    }
+  });
+
+  // Boot
+  readUrl();
+  syncUi();
   applyFilters();
 })();
 </script>
