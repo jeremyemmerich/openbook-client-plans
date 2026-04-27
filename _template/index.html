@@ -403,7 +403,7 @@
     </tr></thead>
     <tbody>
       {% for item in milestones %}
-      <tr class="{{ item.row_class }}" data-status="{% if item.done %}done{% elif item.on_hold %}on-hold{% elif item.is_approval %}key-meeting{% else %}upcoming{% endif %}" data-ws="{{ item.workstream }}">
+      <tr class="{{ item.row_class }}" data-status="{% if item.done %}done{% elif item.on_hold %}on-hold{% elif item.is_approval %}upcoming key-meeting{% else %}upcoming{% endif %}" data-ws="{{ item.workstream }}">
         <td class="ms-date">{{ item.date_display }}</td>
         <td class="ms-name">{{ item.name }}{% if item.type %}<span class="ms-type-label">{{ item.type }}</span>{% endif %}</td>
         <td class="ms-ws">{{ item.workstream }}</td>
@@ -576,7 +576,8 @@
   function applyFilters() {
     var visible = 0;
     rows.forEach(function(r) {
-      var matchStatus = activeStatuses.size === 0 || activeStatuses.has(r.dataset.status);
+      var rowStatuses = (r.dataset.status || '').split(/\s+/).filter(Boolean);
+      var matchStatus = activeStatuses.size === 0 || rowStatuses.some(function(s) { return activeStatuses.has(s); });
       var matchWs = activeWs.size === 0 || activeWs.has(r.dataset.ws);
       if (matchStatus && matchWs) {
         r.classList.remove('ms-hidden');
