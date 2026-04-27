@@ -3,6 +3,13 @@
 # Regenerated hourly on weekdays by .github/workflows/refresh-dashboards.yml
 
 clients:
+  - slug: carter-baldwin
+    display_name: CarterBaldwin
+    monday_group_id: group_mm0j6dwh
+    kickoff_date: "2025-11-12"
+    close_date: "2026-06-15"
+    project_type: linear
+
   - slug: stony-brook
     display_name: The Stony Brook School
     monday_group_id: group_mm0jnqbf
