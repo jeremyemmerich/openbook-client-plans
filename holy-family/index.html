@@ -573,7 +573,7 @@
         <td class="ms-notes"></td>
       </tr>
       
-      <tr class="row-approval" data-status="key-meeting" data-ws="2 Page Overview">
+      <tr class="row-approval" data-status="upcoming key-meeting" data-ws="2 Page Overview">
         <td class="ms-date">May 12</td>
         <td class="ms-name">Presentation of 2 Page Overview<span class="ms-type-label">Client Meeting</span></td>
         <td class="ms-ws">2 Page Overview</td>
@@ -584,7 +584,7 @@
         <td class="ms-notes"></td>
       </tr>
       
-      <tr class="row-approval" data-status="key-meeting" data-ws="Proposal Template">
+      <tr class="row-approval" data-status="upcoming key-meeting" data-ws="Proposal Template">
         <td class="ms-date">May 12</td>
         <td class="ms-name">Present First Draft to Client<span class="ms-type-label">Client Meeting</span></td>
         <td class="ms-ws">Proposal Template</td>
@@ -615,7 +615,7 @@
         <td class="ms-notes"></td>
       </tr>
       
-      <tr class="row-approval" data-status="key-meeting" data-ws="Microsite">
+      <tr class="row-approval" data-status="upcoming key-meeting" data-ws="Microsite">
         <td class="ms-date">May 18</td>
         <td class="ms-name">Present Full Page to Client<span class="ms-type-label">Client Meeting</span></td>
         <td class="ms-ws">Microsite</td>
@@ -656,7 +656,7 @@
         <td class="ms-notes"></td>
       </tr>
       
-      <tr class="row-approval" data-status="key-meeting" data-ws="Microsite">
+      <tr class="row-approval" data-status="upcoming key-meeting" data-ws="Microsite">
         <td class="ms-date">May 25</td>
         <td class="ms-name">Website Training<span class="ms-type-label">Client Meeting</span></td>
         <td class="ms-ws">Microsite</td>
@@ -848,7 +848,8 @@
   function applyFilters() {
     var visible = 0;
     rows.forEach(function(r) {
-      var matchStatus = activeStatuses.size === 0 || activeStatuses.has(r.dataset.status);
+      var rowStatuses = (r.dataset.status || '').split(/\s+/).filter(Boolean);
+      var matchStatus = activeStatuses.size === 0 || rowStatuses.some(function(s) { return activeStatuses.has(s); });
       var matchWs = activeWs.size === 0 || activeWs.has(r.dataset.ws);
       if (matchStatus && matchWs) {
         r.classList.remove('ms-hidden');

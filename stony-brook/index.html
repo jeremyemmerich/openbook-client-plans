@@ -804,7 +804,7 @@
         <td class="ms-notes"></td>
       </tr>
       
-      <tr class="row-approval" data-status="key-meeting" data-ws="Visual Brand System">
+      <tr class="row-approval" data-status="upcoming key-meeting" data-ws="Visual Brand System">
         <td class="ms-date">Apr 14</td>
         <td class="ms-name">Present Brand Elevation, Athletic Logo, & Messaging Toolkit<span class="ms-type-label">Client Meeting</span></td>
         <td class="ms-ws">Visual Brand System</td>
@@ -855,7 +855,7 @@
         <td class="ms-notes"></td>
       </tr>
       
-      <tr class="row-approval" data-status="key-meeting" data-ws="Thematic Spotlight Videos">
+      <tr class="row-approval" data-status="upcoming key-meeting" data-ws="Thematic Spotlight Videos">
         <td class="ms-date">May 3</td>
         <td class="ms-name">Present Explainer Boards<span class="ms-type-label">Client Meeting</span></td>
         <td class="ms-ws">Thematic Spotlight Videos</td>
@@ -866,7 +866,7 @@
         <td class="ms-notes"></td>
       </tr>
       
-      <tr class="row-approval" data-status="key-meeting" data-ws="Messaging Guide">
+      <tr class="row-approval" data-status="upcoming key-meeting" data-ws="Messaging Guide">
         <td class="ms-date">May 6</td>
         <td class="ms-name">Share with Client for Review<span class="ms-type-label">Client Meeting</span></td>
         <td class="ms-ws">Messaging Guide</td>
@@ -877,7 +877,7 @@
         <td class="ms-notes"></td>
       </tr>
       
-      <tr class="row-approval" data-status="key-meeting" data-ws="Vision Video">
+      <tr class="row-approval" data-status="upcoming key-meeting" data-ws="Vision Video">
         <td class="ms-date">May 8</td>
         <td class="ms-name">Present Video to Client<span class="ms-type-label">Client Meeting</span></td>
         <td class="ms-ws">Vision Video</td>
@@ -888,7 +888,7 @@
         <td class="ms-notes"></td>
       </tr>
       
-      <tr class="row-approval" data-status="key-meeting" data-ws="Signature Brooker Brochure">
+      <tr class="row-approval" data-status="upcoming key-meeting" data-ws="Signature Brooker Brochure">
         <td class="ms-date">May 11</td>
         <td class="ms-name">Present First Draft to Client/Schedule Calibration Session<span class="ms-type-label">Client Meeting</span></td>
         <td class="ms-ws">Signature Brooker Brochure</td>
@@ -899,7 +899,7 @@
         <td class="ms-notes"></td>
       </tr>
       
-      <tr class="row-approval" data-status="key-meeting" data-ws="Refreshed One-Sheet Profiles">
+      <tr class="row-approval" data-status="upcoming key-meeting" data-ws="Refreshed One-Sheet Profiles">
         <td class="ms-date">May 11</td>
         <td class="ms-name">Present First Draft/Schedule Calibration Session<span class="ms-type-label">Client Meeting</span></td>
         <td class="ms-ws">Refreshed One-Sheet Profiles</td>
@@ -930,7 +930,7 @@
         <td class="ms-notes"></td>
       </tr>
       
-      <tr class="row-approval" data-status="key-meeting" data-ws="Explainer/Overview Video">
+      <tr class="row-approval" data-status="upcoming key-meeting" data-ws="Explainer/Overview Video">
         <td class="ms-date">May 14</td>
         <td class="ms-name">Present Video to Client<span class="ms-type-label">Client Meeting</span></td>
         <td class="ms-ws">Explainer/Overview Video</td>
@@ -961,7 +961,7 @@
         <td class="ms-notes"></td>
       </tr>
       
-      <tr class="row-approval" data-status="key-meeting" data-ws="Thematic Spotlight Videos">
+      <tr class="row-approval" data-status="upcoming key-meeting" data-ws="Thematic Spotlight Videos">
         <td class="ms-date">May 19</td>
         <td class="ms-name">Present Videos to Client/Schedule Calibration Session<span class="ms-type-label">Client Meeting</span></td>
         <td class="ms-ws">Thematic Spotlight Videos</td>
@@ -1042,7 +1042,7 @@
         <td class="ms-notes"></td>
       </tr>
       
-      <tr class="row-approval" data-status="key-meeting" data-ws="On-Site Production">
+      <tr class="row-approval" data-status="upcoming key-meeting" data-ws="On-Site Production">
         <td class="ms-date">–</td>
         <td class="ms-name">Present First Draft to Client<span class="ms-type-label">Client Meeting</span></td>
         <td class="ms-ws">On-Site Production</td>
@@ -1214,7 +1214,8 @@
   function applyFilters() {
     var visible = 0;
     rows.forEach(function(r) {
-      var matchStatus = activeStatuses.size === 0 || activeStatuses.has(r.dataset.status);
+      var rowStatuses = (r.dataset.status || '').split(/\s+/).filter(Boolean);
+      var matchStatus = activeStatuses.size === 0 || rowStatuses.some(function(s) { return activeStatuses.has(s); });
       var matchWs = activeWs.size === 0 || activeWs.has(r.dataset.ws);
       if (matchStatus && matchWs) {
         r.classList.remove('ms-hidden');

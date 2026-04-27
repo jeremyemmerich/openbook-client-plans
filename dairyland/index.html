@@ -579,7 +579,7 @@
         <td class="ms-notes"></td>
       </tr>
       
-      <tr class="row-approval" data-status="key-meeting" data-ws="Show Ways Forward Presentation">
+      <tr class="row-approval" data-status="upcoming key-meeting" data-ws="Show Ways Forward Presentation">
         <td class="ms-date">May 4</td>
         <td class="ms-name">Show Ways Forward Presentation to Client<span class="ms-type-label">Client Meeting</span></td>
         <td class="ms-ws">Show Ways Forward Presentation</td>
@@ -590,7 +590,7 @@
         <td class="ms-notes"></td>
       </tr>
       
-      <tr class="row-approval" data-status="key-meeting" data-ws="Web: About Us Pages Overhaul">
+      <tr class="row-approval" data-status="upcoming key-meeting" data-ws="Web: About Us Pages Overhaul">
         <td class="ms-date">May 5</td>
         <td class="ms-name">Conduct Website Kickoff Meeting (includes Powderkeg)<span class="ms-type-label">Client Meeting</span></td>
         <td class="ms-ws">Web: About Us Pages Overhaul</td>
@@ -601,7 +601,7 @@
         <td class="ms-notes"></td>
       </tr>
       
-      <tr class="row-approval" data-status="key-meeting" data-ws="Video">
+      <tr class="row-approval" data-status="upcoming key-meeting" data-ws="Video">
         <td class="ms-date">May 11</td>
         <td class="ms-name">Listen to the Client Session<span class="ms-type-label">Client Meeting</span></td>
         <td class="ms-ws">Video</td>
@@ -612,7 +612,7 @@
         <td class="ms-notes"></td>
       </tr>
       
-      <tr class="row-approval" data-status="key-meeting" data-ws="Messaging Playbook">
+      <tr class="row-approval" data-status="upcoming key-meeting" data-ws="Messaging Playbook">
         <td class="ms-date">May 14</td>
         <td class="ms-name">Present First Draft to Client<span class="ms-type-label">Client Meeting</span></td>
         <td class="ms-ws">Messaging Playbook</td>
@@ -623,7 +623,7 @@
         <td class="ms-notes"></td>
       </tr>
       
-      <tr class="row-approval" data-status="key-meeting" data-ws="Web: About Us Pages Overhaul">
+      <tr class="row-approval" data-status="upcoming key-meeting" data-ws="Web: About Us Pages Overhaul">
         <td class="ms-date">May 20</td>
         <td class="ms-name">Present Content Strategy<span class="ms-type-label">Client Meeting</span></td>
         <td class="ms-ws">Web: About Us Pages Overhaul</td>
@@ -674,7 +674,7 @@
         <td class="ms-notes"></td>
       </tr>
       
-      <tr class="row-approval" data-status="key-meeting" data-ws="Video">
+      <tr class="row-approval" data-status="upcoming key-meeting" data-ws="Video">
         <td class="ms-date">Jun 4</td>
         <td class="ms-name">Present to Client - Script, Mix, Directional Boards<span class="ms-type-label">Client Meeting</span></td>
         <td class="ms-ws">Video</td>
@@ -695,7 +695,7 @@
         <td class="ms-notes"></td>
       </tr>
       
-      <tr class="row-approval" data-status="key-meeting" data-ws="Culture Deck">
+      <tr class="row-approval" data-status="upcoming key-meeting" data-ws="Culture Deck">
         <td class="ms-date">Jun 11</td>
         <td class="ms-name">Present First Draft to Client<span class="ms-type-label">Client Meeting</span></td>
         <td class="ms-ws">Culture Deck</td>
@@ -716,7 +716,7 @@
         <td class="ms-notes"></td>
       </tr>
       
-      <tr class="row-approval" data-status="key-meeting" data-ws="Web: About Us Pages Overhaul">
+      <tr class="row-approval" data-status="upcoming key-meeting" data-ws="Web: About Us Pages Overhaul">
         <td class="ms-date">Jun 24</td>
         <td class="ms-name">Present to Content & Design Direction<span class="ms-type-label">Client Meeting</span></td>
         <td class="ms-ws">Web: About Us Pages Overhaul</td>
@@ -737,7 +737,7 @@
         <td class="ms-notes"></td>
       </tr>
       
-      <tr class="row-approval" data-status="key-meeting" data-ws="Sales Tool (Case Study Deck?)">
+      <tr class="row-approval" data-status="upcoming key-meeting" data-ws="Sales Tool (Case Study Deck?)">
         <td class="ms-date">Jun 29</td>
         <td class="ms-name">Present First Draft Case Study to Client<span class="ms-type-label">Client Meeting</span></td>
         <td class="ms-ws">Sales Tool (Case Study Deck?)</td>
@@ -748,7 +748,7 @@
         <td class="ms-notes"></td>
       </tr>
       
-      <tr class="row-approval" data-status="key-meeting" data-ws="Sales Tool (Market 1-Sheets?)">
+      <tr class="row-approval" data-status="upcoming key-meeting" data-ws="Sales Tool (Market 1-Sheets?)">
         <td class="ms-date">Jun 29</td>
         <td class="ms-name">Present First Draft to Client<span class="ms-type-label">Client Meeting</span></td>
         <td class="ms-ws">Sales Tool (Market 1-Sheets?)</td>
@@ -779,7 +779,7 @@
         <td class="ms-notes"></td>
       </tr>
       
-      <tr class="row-approval" data-status="key-meeting" data-ws="Video">
+      <tr class="row-approval" data-status="upcoming key-meeting" data-ws="Video">
         <td class="ms-date">Jul 2</td>
         <td class="ms-name">Present Video to Client<span class="ms-type-label">Client Meeting</span></td>
         <td class="ms-ws">Video</td>
@@ -800,7 +800,7 @@
         <td class="ms-notes"></td>
       </tr>
       
-      <tr class="row-approval" data-status="key-meeting" data-ws="Web: About Us Pages Overhaul">
+      <tr class="row-approval" data-status="upcoming key-meeting" data-ws="Web: About Us Pages Overhaul">
         <td class="ms-date">Jul 13</td>
         <td class="ms-name">Present Built New Pages<span class="ms-type-label">Client Meeting</span></td>
         <td class="ms-ws">Web: About Us Pages Overhaul</td>
@@ -1052,7 +1052,8 @@
   function applyFilters() {
     var visible = 0;
     rows.forEach(function(r) {
-      var matchStatus = activeStatuses.size === 0 || activeStatuses.has(r.dataset.status);
+      var rowStatuses = (r.dataset.status || '').split(/\s+/).filter(Boolean);
+      var matchStatus = activeStatuses.size === 0 || rowStatuses.some(function(s) { return activeStatuses.has(s); });
       var matchWs = activeWs.size === 0 || activeWs.has(r.dataset.ws);
       if (matchStatus && matchWs) {
         r.classList.remove('ms-hidden');
