@@ -447,11 +447,29 @@ def build_milestones(workstreams: list[Workstream], client_cfg: dict) -> list[di
                 "type": "Recurring",
                 "notes": f"Monthly cadence {range_str}" if range_str else "Monthly cadence",
                 "row_class": "",
+                "on_hold": False,
+                "in_progress": False,
+                "status_labels": "upcoming",
             })
             continue
 
         for sub in ws.visible_subitems:
             is_approval = sub.type in ("Approval Needed", "Client Meeting")
+            on_hold = sub._status_text == "On Hold"
+            in_progress = sub._status_text in ("Working on it", "In Review", "Waiting on Client")
+
+            # Build status labels (a row can carry multiple — e.g. upcoming + in-progress + key-meeting)
+            if sub.done:
+                status_labels = ["done"]
+            elif on_hold:
+                status_labels = ["on-hold"]
+            else:
+                status_labels = ["upcoming"]
+                if in_progress:
+                    status_labels.append("in-progress")
+                if is_approval:
+                    status_labels.append("key-meeting")
+
             row_classes = []
             if sub.done:
                 row_classes.append("row-done")
@@ -471,7 +489,10 @@ def build_milestones(workstreams: list[Workstream], client_cfg: dict) -> list[di
                 "type": sub.type,
                 "notes": sub.notes,
                 "row_class": " ".join(row_classes),
-                "on_hold": sub._status_text == "On Hold",
+                "on_hold": on_hold,
+                "in_progress": in_progress,
+                "status_text": sub._status_text,
+                "status_labels": " ".join(status_labels),
             })
 
     # Sort: done items first (by date), then upcoming (by date), nulls last

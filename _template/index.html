@@ -374,6 +374,7 @@
   <div class="filter-bar">
     <div class="filter-buttons">
       <button class="filter-btn active" data-filter="upcoming">Upcoming</button>
+      <button class="filter-btn" data-filter="in-progress">In Progress</button>
       <button class="filter-btn" data-filter="done">Done</button>
       <button class="filter-btn" data-filter="on-hold">On Hold</button>
       <button class="filter-btn" data-filter="key-meeting">Key Meetings</button>
@@ -403,13 +404,14 @@
     </tr></thead>
     <tbody>
       {% for item in milestones %}
-      <tr class="{{ item.row_class }}" data-status="{% if item.done %}done{% elif item.on_hold %}on-hold{% elif item.is_approval %}upcoming key-meeting{% else %}upcoming{% endif %}" data-ws="{{ item.workstream }}">
+      <tr class="{{ item.row_class }}" data-status="{{ item.status_labels }}" data-ws="{{ item.workstream }}">
         <td class="ms-date">{{ item.date_display }}</td>
         <td class="ms-name">{{ item.name }}{% if item.type %}<span class="ms-type-label">{{ item.type }}</span>{% endif %}</td>
         <td class="ms-ws">{{ item.workstream }}</td>
         <td class="ms-type">
           {% if item.done %}<span class="done-check">✓ Done</span>
           {% elif item.on_hold %}<span style="color:var(--muted);font-style:italic">On Hold</span>
+          {% elif item.in_progress %}<span style="font-weight:600;color:#B8860B">{{ item.status_text }}</span>
           {% elif item.is_approval %}<span style="font-weight:600;color:var(--approval-text)">Key Meeting</span>
           {% else %}<span style="color:var(--muted)">Upcoming</span>{% endif %}
         </td>
